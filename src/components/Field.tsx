@@ -1,16 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { Paragraph } from '@contentful/forma-36-react-components';
-import { FieldExtensionSDK } from '@contentful/app-sdk';
+import { FieldExtensionSDK, Link } from '@contentful/app-sdk';
 import isEqual from "lodash/isEqual";
 
+import './styles.css';
+
 import updateArrayImmutable from '../utils/UpdateArrayImmutable';
+import syncronizedState from '../utils/syncronizedState';
 
 import DraggableField from "./DraggableField"
-import {MoodboardElement, handleStop} from "./DraggableField";
+import { handleStop } from "./DraggableField";
+import { merge } from 'lodash';
 
 interface FieldProps {
   sdk: FieldExtensionSDK;
 }
+
+export type Image = { id: string; type: string; title: string; url: string; width: number; height: number; }
 
 export type MoodboardConfiguration = {
   HEIGHT: number;
@@ -25,20 +30,37 @@ export type MoodbardState = {
   MoodboardConfiguration
 }
 
-const CONTENT_FIELD_ID = 'moodboard';
+export type MoodboardElement = {
+  id: string;
+  height: string;
+  width: string;
+  position: {
+    x: number;
+    y: number;
+  };
+  grid?: {
+    x: number;
+    y: number;
+  } & Image;
+}
+
+const ENTRY_FIELD_ID = 'moodboard';
+const IMAGES_FIELD_ID = 'moodboardImages';
+
+
 
 const Field = (props: FieldProps) => {
   // If you only want to extend Contentful's default editing experience
   // reuse Contentful's editor components
   // -> https://www.contentful.com/developers/docs/extensibility/field-editors/
 
-  const SDK_FIELD = props.sdk.entry.fields[CONTENT_FIELD_ID];
+  const SDK_FIELD = props.sdk.entry.fields[ENTRY_FIELD_ID];
 
 
-  const elements: MoodboardElement[] = [
-    {id: "asjodif", color: "black", height: "20px", width: "20px", position: {x: 20, y: 20}, grid:{x: 10, y: 10}},
-    {id: "sdfj", color: "blue", height: "20px", width: "20px", position: {x: 60, y: 20}, grid:{x: 10, y: 10}}
-  ]
+  // const elements: MoodboardElement[] = [
+  //   {id: "asjodif", color: "black", height: "20px", width: "20px", position: {x: 20, y: 20}, grid:{x: 10, y: 10}},
+  //   {id: "sdfj", color: "blue", height: "20px", width: "20px", position: {x: 60, y: 20}, grid:{x: 10, y: 10}}
+  // ]
 
   // TODO: initialize from contentful
   const [moodboard, setMoodboard] = useState(SDK_FIELD.getValue() || {
@@ -50,8 +72,10 @@ const Field = (props: FieldProps) => {
       //   y: 20
       // }
     },
-    elements: [...elements]
+    elements: []
   });
+
+  const [images, setImages] = useState<Image[]>([]);
 
   const handleStop: handleStop = async (elementId, position) => {
     const indexToUpdate = moodboard.elements.findIndex((element: MoodboardElement) => element.id === elementId);
@@ -74,20 +98,14 @@ const Field = (props: FieldProps) => {
 
   useEffect(() => {
     moodboard?.elements.map((element: MoodboardElement) => {
-      console.log(`Element with color: ${element.color} is at position x: ${element.position.x} y: ${element.position.y}`)
       return true;
     })
-    console.log({moodboard})
 
     const sdkValue = SDK_FIELD.getValue();
-
     const sdkEqualsState = isEqual(sdkValue, moodboard);
-
-    console.log({sdkEqualsState});
 
     // Any time moodboard state is updated persist it to Contentful
     if (!sdkEqualsState) {
-      console.log('Setting')
       SDK_FIELD.setValue(moodboard);
     }
   }, [moodboard, SDK_FIELD])
@@ -102,6 +120,36 @@ const Field = (props: FieldProps) => {
       })
     }
   }, [SDK_FIELD, moodboard]);
+
+  const DEFAULT_POSITION_X = 20;
+  const DEFAULT_POSITION_Y = 30;
+
+  useEffect(() => {
+    const sync = syncronizedState(images, moodboard.elements);
+    // @ts-ignore
+    const withDefaultValues: MoodboardElement[] = sync.map((item: MoodboardElement) => {
+      return {
+        ...item,
+        position: {
+          x: item?.position?.x || DEFAULT_POSITION_X,
+          y: item?.position?.x || DEFAULT_POSITION_Y,
+        }
+      }
+    });
+
+    console.log({withDefaultValues});
+
+    const mergedState = {...moodboard, elements: withDefaultValues};
+
+    debugger;
+
+    if (!isEqual(moodboard, mergedState)) {
+      debugger;
+      setMoodboard(mergedState);
+    }
+   }, [images, moodboard, moodboard.elements])
+
+  
  
   // Runs on the first mount only
   useEffect(() => {
@@ -123,17 +171,50 @@ const Field = (props: FieldProps) => {
     return null;
   }
 
+  const getImages= ()=> {
+    // Grab references to the images
+    const imageLinks: Link[] = props.sdk.entry.fields[IMAGES_FIELD_ID]?.getValue();
+
+    if (!imageLinks) {
+      return false;
+    }
+    // Extract IDs
+    const imageIds = imageLinks?.map((link) => link.sys?.id);
+    
+    // console.log({imageLinks})
+    // console.log({imageIds})
+    
+    const images = imageIds?.map(id => props.sdk.space.getAsset(id))
+
+    Promise.all(images).then((data) => {
+      const parsedImages = data.map((image: {[prop: string]: any;}): Image => ({
+        id: image.sys.id,
+        type: "image",
+        title: image.fields.title["en-US"],
+        url: image.fields.file["en-US"].url,
+        width: image.fields.file["en-US"].details.width,
+        height: image.fields.file["en-US"].details.height
+      }));
+
+      setImages(parsedImages)
+
+    });
+  }
+
+  getImages();
+
   return (
+    <>
+    <p>{JSON.stringify(images)}</p>
     <div style={{
       width: "100%",
-      height: "500px",
-      backgroundColor: "#cecece"
+      height: "500px"
     }}>
-      <Paragraph>Hello Entry Field Component</Paragraph>
       {moodboard.elements.map((element: MoodboardElement) => (
         <DraggableField key={element.id} element={element} moodboardConfiguration={moodboard.configuration} handleStop={(elementId, position) => handleStop(elementId, position)} />
       ))}
     </div>
+    </>
   );
 };
 
