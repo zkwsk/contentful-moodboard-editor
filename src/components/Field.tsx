@@ -56,7 +56,6 @@ const Field = (props: FieldProps) => {
 
   const SDK_FIELD = props.sdk.entry.fields[ENTRY_FIELD_ID];
 
-
   // const elements: MoodboardElement[] = [
   //   {id: "asjodif", color: "black", height: "20px", width: "20px", position: {x: 20, y: 20}, grid:{x: 10, y: 10}},
   //   {id: "sdfj", color: "blue", height: "20px", width: "20px", position: {x: 60, y: 20}, grid:{x: 10, y: 10}}
@@ -141,8 +140,6 @@ const Field = (props: FieldProps) => {
 
     const mergedState = {...moodboard, elements: withDefaultValues};
 
-    debugger;
-
     if (!isEqual(moodboard, mergedState)) {
       debugger;
       setMoodboard(mergedState);
@@ -197,23 +194,29 @@ const Field = (props: FieldProps) => {
       }));
 
       setImages(parsedImages)
-
     });
   }
 
   getImages();
 
+
+  const onDialogOpen = () => {
+    console.log('open')
+    props.sdk.dialogs.openCurrentApp({title: "Alert", width: "fullWidth", minHeight: "90vh" })
+  }
+
   return (
     <>
-    <p>{JSON.stringify(images)}</p>
-    <div style={{
+      <button onClick={onDialogOpen}>Edit layout</button>
+    {/* <p>{JSON.stringify(images)}</p> */}
+    {/* <div style={{
       width: "100%",
       height: "500px"
     }}>
       {moodboard.elements.map((element: MoodboardElement) => (
         <DraggableField key={element.id} element={element} moodboardConfiguration={moodboard.configuration} handleStop={(elementId, position) => handleStop(elementId, position)} />
       ))}
-    </div>
+    </div> */}
     </>
   );
 };

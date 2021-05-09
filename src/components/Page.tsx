@@ -7,6 +7,7 @@ interface PageProps {
 }
 
 const Page = (props: PageProps) => {
+
   return <Paragraph>Hello Page Component</Paragraph>;
 };
 
