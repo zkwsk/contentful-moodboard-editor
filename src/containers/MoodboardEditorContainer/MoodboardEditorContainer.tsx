@@ -2,6 +2,8 @@ import React, { useEffect, useState, MouseEvent } from 'react';
 import { Button, Card, DropdownList, DropdownListItem, EntityList, EntityListItem, Paragraph, Typography } from '@contentful/forma-36-react-components';
 import { FieldExtensionSDK } from '@contentful/app-sdk';
 
+import { ENTRY_FIELD_ID } from '../../constants';
+
 interface MoodboardEditorContainerProps {
   sdk: FieldExtensionSDK;
 }
@@ -12,7 +14,6 @@ interface LayoutState {
   }
 }
 
-const ENTRY_FIELD_ID = 'moodboard';
 
 const MoodboardEditorContainer = ({sdk}: MoodboardEditorContainerProps) => {
 
@@ -37,11 +38,9 @@ const MoodboardEditorContainer = ({sdk}: MoodboardEditorContainerProps) => {
 
   const handleRemove = (id: string) => {
     // TODO: Make a warning alert
-    
-    const modified = {...layouts};
-    delete modified[id];
 
-    console.log({modified});
+    let modified = {  ...layouts  };
+    delete modified[id];
 
     setLayouts(modified);
   }

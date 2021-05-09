@@ -1,27 +1,20 @@
 import React, { useState } from 'react';
 import { Paragraph } from '@contentful/forma-36-react-components';
-import { DialogExtensionSDK, ParametersAPI } from '@contentful/app-sdk';
-import CreateLayout from '../CreateLayout';
-import EditLayout from '../EditLayout';
+import { DialogExtensionSDK } from '@contentful/app-sdk';
+import LayoutContainer from '../../containers/LayoutContainer';
 
 interface DialogProps {
   sdk: DialogExtensionSDK;
 }
+interface InvocationParams {
+  id?: string;
+}
 
-type ParameterInvocationWithId = {
-  invocation: {
-    id: string;
-  }
-} & ParametersAPI;
+const Dialog = ({ sdk }: DialogProps) => {
+  const params = sdk.parameters?.invocation as InvocationParams;
+  let layoutId = params.id;
 
-const Dialog = ({sdk}: DialogProps) => {
-
-  // @ts-ignore
-  const layoutId = sdk.parameters?.invocation?.hasOwnProperty("id") && sdk.parameters.invocation.id as ParameterInvocationWithId;
-
-
-
-  return layoutId ? <EditLayout /> : <CreateLayout/>
+  return <LayoutContainer sdk={sdk} layoutId={layoutId} />;
 };
 
 export default Dialog;
