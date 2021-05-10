@@ -3,8 +3,9 @@ import { DialogExtensionSDK } from '@contentful/app-sdk';
 
 import LayoutTabs from '../../components/LayoutTabs';
 import LayoutSettingsPanel from '../../components/LayoutSettingsPanel';
-import getImages from './getImages';
-import { IMAGES_FIELD_ID } from '../../constants';
+import LayoutElementsPanel from '../../components/LayoutElementsPanel';
+
+import { ASSETS_FIELD_ID } from '../../constants';
 
 import { Image } from "../../types";
 
@@ -19,10 +20,11 @@ const LayoutContainer = ({sdk, layoutId} : LayoutContainerProps) => {
   const [layout, setlayout] = useState()
   const [images, setImages] = useState<Image[]>([]);
 
-  // getImages({sdk: sdk, fieldId: IMAGES_FIELD_ID});
+  const newRecord = !layoutId;
 
+  
+  
 
-  const newRecord = !(layoutId);
 
   return (
     <LayoutTabs
@@ -35,7 +37,7 @@ const LayoutContainer = ({sdk, layoutId} : LayoutContainerProps) => {
         {
           id: 'elements',
           label: 'Elements',
-          panel: <h1>Elements page</h1>,
+          panel: <LayoutElementsPanel elements={[]} />,
         },
         {
           id: 'layout',
