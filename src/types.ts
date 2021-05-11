@@ -1,6 +1,5 @@
 export type Layout = {
   settings: LayoutSettings;
-  maxWidth: number;
   elements: Draggable[];
 };
 

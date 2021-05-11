@@ -1,10 +1,14 @@
 import React, { useEffect, useState, MouseEvent } from 'react';
 import { Button, Card, DropdownList, DropdownListItem, EntityList, EntityListItem, Paragraph, Typography } from '@contentful/forma-36-react-components';
-import { FieldExtensionSDK, Link } from '@contentful/app-sdk';
+import {
+  OpenCustomWidgetOptions,
+  FieldExtensionSDK,
+  Link,
+} from '@contentful/app-sdk';
 
 import { ENTRY_FIELD_ID, ASSETS_FIELD_ID } from '../../constants';
 
-import { Asset, Image, Video } from '../../types';
+import { Asset, DialogInvocationParams, Image, Video } from '../../types';
 
 import objectIsEmpty from "../../utilities/objectIsEmpty";
 
@@ -45,9 +49,16 @@ const MoodboardEditorContainer = ({sdk}: MoodboardEditorContainerProps) => {
     layoutIds: Object.keys(entryField.getValue()),
   };
 
+
+  const openDialog = async (options: unknown) => {
+    // @ts-ignore
+    const updatedLayout = await sdk.dialogs.openCurrentApp(options);
+    console.log({ updatedLayout });
+  };
+
   const handleEdit = async (currentLayoutId: string) => {
     await sdk.dialogs.openCurrentApp({
-      title: 'Edit Layout',
+      // title: 'Edit Layout',
       width: 'fullWidth',
       minHeight: '90vh',
       parameters: { ...dialogParameters, currentLayoutId },
@@ -55,13 +66,18 @@ const MoodboardEditorContainer = ({sdk}: MoodboardEditorContainerProps) => {
   };
 
   const handleCreate = async () => {
-    const saved = await sdk.dialogs.openCurrentApp({
-      title: 'Create Layout',
+    // const saved = await sdk.dialogs.openCurrentApp({
+    //   title: 'Create Layout',
+    //   width: 'fullWidth',
+    //   minHeight: '90vh',
+    //   parameters: dialogParameters,
+    // });
+    openDialog({
+      // title: 'Create Layout',
       width: 'fullWidth',
       minHeight: '90vh',
       parameters: dialogParameters,
     });
-    console.log({  saved  });
   };
 
   const handleRemove = (id: string) => {

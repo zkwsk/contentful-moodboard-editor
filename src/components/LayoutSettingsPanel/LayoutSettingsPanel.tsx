@@ -24,7 +24,6 @@ const LayoutSettingsPanel = ({
   layoutIds,
   onUpdate,
 }: LayoutSettingsPanelProps) => {
-  const { title, enabled, aspectRatio, maxWidth, isValid } = settings;
   const [ validation, setValidation ] = useState({
     title: '',
     aspectRatio: ''
@@ -34,7 +33,7 @@ const LayoutSettingsPanel = ({
   const prevValidation = usePrevious(validation);
 
   const isTitleValid = (input: string) => {
-    const titleRegex = /^[\w ]*[^\W_][\w ]*$/i;
+    const titleRegex = /^[\w ]*[^\W_][\w ]*$/gm;
     return titleRegex.test(input)
   }
 
@@ -47,23 +46,17 @@ const LayoutSettingsPanel = ({
   }
 
   const isAspectValid = (input: string) => {
-    const list = input.split(":");
-    if (list.length !== 2) {
-      return false;
-    }
-    if (isNaN(parseInt(list[0], 10)) || isNaN(parseInt(list[1], 10))) {
-      return false;
-    }
-    return true;
+    const regex = /^\d*:\d*$/i;
+    return regex.test(input);
   }
 
 
 
   // Check if component is valid
   useEffect(() => {
-        if (isEqual(state, prevState)) {
-          return;
-        }
+    if (isEqual(validation, prevValidation)) {
+      return;
+    }
 
     const hasValidationErrors = () => {
       return Object.values(validation).some((element) => !!element);
@@ -73,14 +66,17 @@ const LayoutSettingsPanel = ({
     hasValidationErrors() && state.isValid
       ? setState({ ...state, isValid: false })
       : setState({ ...state, isValid: true });
-  }, [validation, prevState, state])
+  }, [validation])
 
 
   // Validate title and layoutId
   useEffect(() => {
-    if (isEqual(validation, prevValidation)) {
-      return;
-    }
+    // if (isEqual(prevState?.title, state.title)) {
+    //   return;
+    // }
+    // if (isEqual(validation, prevValidation)) {
+    //   return;
+    // }
     if (!(state.title)) {
       setValidation({
         ...validation,
@@ -105,16 +101,11 @@ const LayoutSettingsPanel = ({
       });
       return;
     }
-
-
     setValidation({...validation, title: ''})
-  }, [state.title, state.layoutId, isIdDuplicated])
+  }, [state.title, state.layoutId])
 
   // Validate aspect ratio
   useEffect(() => {
-    if (isEqual(validation, prevValidation)) {
-      return;
-    }
     if (isAspectValid(state.aspectRatio)) {
       setValidation({ ...validation, aspectRatio: '' });
     } else {
@@ -126,24 +117,31 @@ const LayoutSettingsPanel = ({
         setValidation(newValidationState);
       }
     }
-  }, [state.aspectRatio, prevValidation, validation])
+  }, [state.aspectRatio])
 
-  // Update parent when state is valid
-  useEffect(() => {
-    if (state.isValid && !isEqual(settings, state)) {
-      onUpdate(state);
-    }
-  }, [state, onUpdate])
+
 
   // Populate settings from parent to internal state
   useEffect(() => {
-    setState({...settings});
+    if (!isEqual(settings, state)) {
+      setState({ ...settings });
+    }
   }, [settings]);
 
-  // const handleBlur = ()   => {
-  //   if (state.isValid) {
-  //     onUpdate(state);
+  // useEffect(() => {
+  //   if (!state.isValid) {
+  //     onUpdate({ ...settings, isValid: state.isValid });
   //   }
+  // }, [state.isValid])
+
+  const persistState = () => {
+    if (!isEqual(settings, state)) {
+      onUpdate(state);
+    }
+  };
+
+  // const handleBlur = () => {
+  //   persistState();
   // };
 
   return (
@@ -186,7 +184,7 @@ const LayoutSettingsPanel = ({
               // }
               
             }}
-            // onBlur={handleBlur}
+            onBlur={persistState}
             validationMessage={validation.title}
           />
           <CheckboxField
@@ -214,14 +212,14 @@ const LayoutSettingsPanel = ({
             onChange={(event) => {
               setState({...state, aspectRatio: event.currentTarget.value});
             }}
-            // onBlur={()=> handleBlur}
+            onBlur={persistState}
           />
           <TextField
             name="maxWidth"
             id="maxWidth"
             labelText="Max width"
             textInputProps={{ placeholder: '880px' }}
-            value={maxWidth ? `${maxWidth}px` : ''}
+            value={state.maxWidth ? `${state.maxWidth}px` : ''}
             helpText="The maximum screen width in pixels this layout will be effective at. If you do not supply a max width the layout will stay in effect at the widest possible width of the site. If another layout with a narrower width is present, that layout will take precedense at narrower widths."
           />
         </FieldGroup>

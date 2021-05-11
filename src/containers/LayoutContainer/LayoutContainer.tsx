@@ -1,22 +1,21 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { DialogExtensionSDK } from '@contentful/app-sdk';
-
+import { Button, Workbench } from '@contentful/forma-36-react-components';
 import LayoutTabs from '../../components/LayoutTabs';
 import LayoutSettingsPanel from '../../components/LayoutSettingsPanel';
 import LayoutElementsPanel from '../../components/LayoutElementsPanel';
 
 import { ASSETS_FIELD_ID } from '../../constants';
 
-import { DialogInvocationParams, Image, LayoutSettings } from '../../types';
+import { DialogInvocationParams, Image, Layout, LayoutSettings } from '../../types';
 
 type LayoutContainerProps = {
-  layoutProps: DialogInvocationParams;
   sdk: DialogExtensionSDK;
 };
 
-
-const LayoutContainer = ({ sdk, layoutProps }: LayoutContainerProps) => {
-  const { currentLayoutId, layoutIds, entryField, assets } = layoutProps;
+const LayoutContainer = ({ sdk }: LayoutContainerProps) => {
+  const params = sdk.parameters?.invocation as DialogInvocationParams;
+  const { currentLayoutId, layoutIds, entryField, assets } = params;
 
   const [settings, setSettings] = useState<LayoutSettings>({
     layoutId: '',
@@ -27,9 +26,16 @@ const LayoutContainer = ({ sdk, layoutProps }: LayoutContainerProps) => {
     isValid: false,
   });
 
-  const [layout, setlayout] = useState();
+  const [layout, setlayout] = useState<Layout>({
+    settings: {...settings},
+    elements: []
+  });
+  
   const [images, setImages] = useState<Image[]>([]);
 
+  // sdk.close(layout);
+
+  // TODO: Set initial values only on new records
   const newRecord = !currentLayoutId;
 
   const handleSettingsUpdate = (settings: LayoutSettings) => {
@@ -37,41 +43,68 @@ const LayoutContainer = ({ sdk, layoutProps }: LayoutContainerProps) => {
     setSettings({ ...settings });
   };
 
-  const elementsPanelDisabled = !(settings.isValid && assets.length > 0 && settings.enabled);
-  // TODO: Make layout panel listen for whether any elements are 
+  const handleSave = () => {
+    sdk.close(layout);
+  }
+
+  useEffect(() => {
+    setlayout({ ...layout, settings: { ...settings } });
+  }, [settings]);
+
+  useEffect(() => {
+    console.log({  layout  });;
+  }, [layout]);;
+
+  const elementsPanelDisabled = !(
+    settings.isValid &&
+    assets.length > 0 &&
+    settings.enabled
+  );
+  // TODO: Make layout panel listen for whether any elements are
   // enabled on elements panel.
   const layoutPanelDisabled = elementsPanelDisabled;
 
   return (
-    <LayoutTabs
-      elements={[
-        {
-          id: 'settings',
-          label: 'Settings',
-          disabled: false,
-          panel: (
-            <LayoutSettingsPanel
-              settings={settings}
-              layoutIds={layoutIds}
-              onUpdate={handleSettingsUpdate}
-            />
-          ),
-        },
-        {
-          id: 'elements',
-          label: 'Elements',
-          disabled: elementsPanelDisabled,
-          panel: <LayoutElementsPanel elements={[]} />,
-        },
-        {
-          id: 'layout',
-          label: 'Layout',
-          disabled: layoutPanelDisabled,
-          panel: <h1>Layout page</h1>,
-        },
-      ]}
-    />
+    <Workbench>
+      <Workbench.Header
+        title="Create Layout"
+        actions={<Button disabled={!(settings.isValid)} onClick={handleSave}>Save</Button>}
+        onBack={() => {
+          sdk.close();
+        }}
+      />
+      <Workbench.Content type="default">
+        <LayoutTabs
+          elements={[
+            {
+              id: 'settings',
+              label: 'Settings',
+              disabled: false,
+              panel: (
+                <LayoutSettingsPanel
+                  settings={settings}
+                  layoutIds={layoutIds}
+                  onUpdate={handleSettingsUpdate}
+                />
+              ),
+            },
+            {
+              id: 'elements',
+              label: 'Elements',
+              disabled: elementsPanelDisabled,
+              panel: <LayoutElementsPanel elements={[]} />,
+            },
+            {
+              id: 'layout',
+              label: 'Layout',
+              disabled: layoutPanelDisabled,
+              panel: <h1>Layout page</h1>,
+            },
+          ]}
+        />
+      </Workbench.Content>
+    </Workbench>
   );
-};
+};;
 
 export default LayoutContainer;
