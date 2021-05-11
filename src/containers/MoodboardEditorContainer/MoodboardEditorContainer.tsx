@@ -23,6 +23,7 @@ const MoodboardEditorContainer = ({sdk}: MoodboardEditorContainerProps) => {
 
   const [assets, setAssets] = useState<Asset[]>([]);
 
+
   const entryField = sdk.entry.fields[ENTRY_FIELD_ID];
   const assetField = sdk.entry.fields[ASSETS_FIELD_ID];
 
@@ -40,47 +41,36 @@ const MoodboardEditorContainer = ({sdk}: MoodboardEditorContainerProps) => {
 
   const dialogParameters = {
     assets,
-    // entryField // Probably just needs .getValue()
+    entryField: entryField.getValue(),
+    layoutIds: Object.keys(entryField.getValue()),
   };
 
-  const handleEdit = (id: string)=> {
-    sdk.dialogs.openCurrentApp({
+  const handleEdit = async (currentLayoutId: string) => {
+    await sdk.dialogs.openCurrentApp({
       title: 'Edit Layout',
       width: 'fullWidth',
       minHeight: '90vh',
-      parameters: { ...dialogParameters, id },
+      parameters: { ...dialogParameters, currentLayoutId },
     });
-  }
+  };
 
-  const handleCreate = ()=> {
-    sdk.dialogs.openCurrentApp({
+  const handleCreate = async () => {
+    const saved = await sdk.dialogs.openCurrentApp({
       title: 'Create Layout',
       width: 'fullWidth',
       minHeight: '90vh',
-      parameters: dialogParameters
+      parameters: dialogParameters,
     });
-  }
+    console.log({  saved  });
+  };
 
   const handleRemove = (id: string) => {
     // TODO: Make a warning alert
-
-    let modified = {  ...layouts  };
+    let modified = { ...layouts };
     delete modified[id];
 
     setLayouts(modified);
   }
-
-  // useEffect(() => {
-  //   // Callback for changes of the field value.
-  //   const detachValueChangeHandler = assetField.onValueChanged((value) => {
-  //     console.log({ value });
-  //   });
-
-  //   return () => {
-  //     detachValueChangeHandler();
-  //   };
-  // }, [assetField]);
-
 
   useEffect(() => {
     const detach = assetField.onValueChanged((value) => {
@@ -96,48 +86,38 @@ const MoodboardEditorContainer = ({sdk}: MoodboardEditorContainerProps) => {
       // Extract IDs
       const imageIds = imageLinks?.map((link) => link.sys?.id);
 
-      // console.log({imageLinks})
-      // console.log({imageIds})
-
+      // Get assets via the SDK
       const assetPromises = imageIds?.map((id) => sdk.space.getAsset(id));
 
       Promise.all(assetPromises).then((data) => {
-        // const parsedImages = data.map(
-        //   (image: { [prop: string]: any }): Image => ({
-        //     id: image.sys.id,
-        //     type: image.fields.file['en-US'].url.startsWith('//images')
-        //       ? 'image'
-        //       : 'video',
-        //     title: image.fields.title['en-US'],
-        //     url: image.fields.file['en-US'].url,
-        //     width: image.fields.file['en-US'].details.width,
-        //     height: image.fields.file['en-US'].details.height,
-        //   }),
-        // );
-          const filteredData = data.filter((asset: { [prop: string]: any }) => {
-            return !(objectIsEmpty(asset.fields));
-          })
+        const filteredData = data.filter((asset: { [prop: string]: any }) => {
+          return !objectIsEmpty(asset.fields);
+        });
 
-          const parsedImages = filteredData.map((asset: { [prop: string]: any }): Asset => {
-              const type = asset.fields.file['en-US'].contentType;
-              const filename = asset.fields.file['en-US'].fileName;
-              const title = asset.fields.title['en-US'];
-              const width = asset.fields.file['en-US'].details.image?.width || 1920; 
-              const height = asset.fields.file['en-US'].details.image?.height || 1080;
+        const parsedImages = filteredData.map(
+          (asset: { [prop: string]: any }): Asset => {
+            const type = asset.fields.file['en-US'].contentType;
+            const filename = asset.fields.file['en-US'].fileName;
+            const title = asset.fields.title['en-US'];
+            const width =
+              asset.fields.file['en-US'].details.image?.width || 1920;
+            const height =
+              asset.fields.file['en-US'].details.image?.height || 1080;
 
-              return {
-                id: asset.sys.id,
-                filename,
-                title,
-                type,
-                width,
-                height,
-                element: {
-                  description: asset.fields.description?.['en-US'],
-                  url: asset.fields.file['en-US'].url,
-                },
-              };
-            });
+            return {
+              id: asset.sys.id,
+              filename,
+              title,
+              type,
+              width,
+              height,
+              element: {
+                description: asset.fields.description?.['en-US'],
+                url: asset.fields.file['en-US'].url,
+              },
+            };
+          },
+        );
         setAssets(parsedImages);
       });
     });

@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@contentful/app-sdk": "^3.32.2",
+    "@contentful/field-editor-json": "^0.11.2",
     "@contentful/field-editor-single-line": "^0.14.1",
     "@contentful/field-editor-test-utils": "^0.11.1",
     "@contentful/forma-36-fcss": "^0.3.1",
@@ -17,6 +18,7 @@
     "@types/react": "^17.0.3",
     "@types/react-dom": "^17.0.3",
     "cross-env": "^7.0.3",
+    "lodash-es": "^4.17.21",
     "param-case": "^3.0.4",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
@@ -45,5 +47,8 @@
       "last 1 safari version"
     ]
   },
-  "homepage": "."
+  "homepage": ".",
+  "devDependencies": {
+    "@types/lodash-es": "^4.17.4"
+  }
 }

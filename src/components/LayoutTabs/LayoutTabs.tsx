@@ -1,8 +1,6 @@
 import React, { ReactElement, useState } from 'react';
 import { Tab, TabPanel, Tabs } from '@contentful/forma-36-react-components';
 
-import { LayoutPanelProps } from '../../types';
-
 type LayoutTabsProps = {
   elements: Element[];
 };
@@ -10,6 +8,7 @@ type LayoutTabsProps = {
 type Element = {
   id: TabOptions;
   label: string;
+  disabled: boolean;
   panel: ReactElement;
 };
 
@@ -23,10 +22,11 @@ const LayoutTabs = ({ elements }: LayoutTabsProps) => {
   return (
     <>
       <Tabs role="navigation" withDivider>
-        {elements.map(({ id, label }) => (
+        {elements.map(({ id, label, disabled }) => (
           <Tab
             id={id}
             key={id}
+            disabled={disabled}
             selected={selectedTab === id}
             onSelect={() => {
               setselectedTab(id);

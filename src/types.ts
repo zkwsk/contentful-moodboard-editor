@@ -1,7 +1,3 @@
-export type LayoutPanelProps = {
-  newRecord: boolean;
-}
-
 export type Layout = {
   settings: LayoutSettings;
   maxWidth: number;
@@ -9,11 +5,13 @@ export type Layout = {
 };
 
 export type LayoutSettings = {
-  id: string;
+  layoutId: string;
   title: string;
-  disabled: boolean;
-  aspectRatio: number;
-}
+  enabled: boolean;
+  aspectRatio: string;
+  maxWidth: number;
+  isValid: boolean;
+};
 
 export type Draggable = {
   published: boolean;
@@ -28,8 +26,8 @@ export type Draggable = {
 
 export type Text = {
   innerText: string;
-  element: "h1" | "h2" | "h3" | "h4" | "p"
-}
+  element: 'h1' | 'h2' | 'h3' | 'h4' | 'p';
+};
 
 export type Asset = {
   id: string;
@@ -53,3 +51,10 @@ export type Video = {
   loop?: boolean;
   poster?: string;
 };
+
+export interface DialogInvocationParams {
+  currentLayoutId?: string;
+  layoutIds: string[];
+  entryField: Layout;
+  assets: Image[];
+}
