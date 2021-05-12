@@ -16,80 +16,68 @@ const LayoutCanvas = ({ layout, onDragResize }: LayoutCanvasProps) => {
 
   console.log({ publishedElements });
 
+  const [aspectX, aspectY] = settings.aspectRatio.split(':').map(element => parseInt(element, 10)) as [number, number];
+
+  const aspect = aspectX / aspectY;
+  const aspectPercent = (aspectY / aspectX) * 100 + '%';
+
+  // TODO: Disabled. Currently bounds are offset by the previous elements height
+  const bounds = false && {
+    top: 0,
+    left: 0
+  }
+
   return (
-    <>
+    <div style={{border: "1px dotted black", height: 0, paddingBottom: aspectPercent}}>
       {publishedElements.map((element, index) => {
-        const { height, width, position, asset } = element;
+        const {
+          height,
+          width,
+          position: { x, y },
+          asset,
+        } = element;
         return (
-          <ResizableBox
+          <Draggable
             key={asset.id}
-            height={height}
-            width={width}
-            lockAspectRatio={true}
-            resizeHandles={['se']}
-            onResize={(event, data) => {
+            bounds={bounds}
+            defaultPosition={{ x, y }}
+            cancel={'.react-resizable-handle'}
+            onDrag={(e, { x, y }) => {
               onDragResize(index, {
                 ...element,
-                height: data.size.height,
-                width: data.size.width,
+                position: { x, y },
               });
             }}
           >
-            <div
-              style={{
-                width: '100%',
-                height: '100%',
-                border: '2px solid black',
-                backgroundImage: `url(${asset.element.url})`,
-                backgroundRepeat: 'no-repeat',
-                backgroundPosition: 'center center',
-                backgroundSize: 'contain'
-
+            <ResizableBox
+              height={height}
+              width={width}
+              lockAspectRatio={true}
+              resizeHandles={['se']}
+              onResize={(event, data) => {
+                onDragResize(index, {
+                  ...element,
+                  height: data.size.height,
+                  width: data.size.width,
+                });
               }}
-            ></div>
-          </ResizableBox>
+            >
+              <div
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  backgroundImage: `url(${asset.element.url})`,
+                  backgroundRepeat: 'no-repeat',
+                  backgroundPosition: 'center center',
+                  backgroundSize: 'contain',
+                }}
+              ></div>
+            </ResizableBox>
+          </Draggable>
         );
       })}
-    </>
+    </div>
   );
-
-  // return (
-  //   {publishedElements.map(element => (
-  //   <Draggable
-  //     bounds="parent"
-  //     // grid={
-  //     //   moodboardConfiguration.DEFAULT_GRID ?
-  //     //   [element.grid?.x || moodboardConfiguration.DEFAULT_GRID.x, element.grid?.y || moodboardConfiguration.DEFAULT_GRID.y] :
-  //     //   undefined
-  //     // }
-  //     position={{ x: element.position.x, y: element.position.y }}
-  //     // position={{x: 100, y: 100}}
-  //     onStop={(event, position) => {
-  //       handleStop(element.id, position);
-  //     }}
-  //     cancel={'.react-resizable-handle'}
-  //   >
-  //     <ResizableBox
-  //       height={300}
-  //       width={400}
-  //       minConstraints={[30, 40]}
-  //       lockAspectRatio={true}
-  //       // resizeHandles={['sw', 'se', 'nw', 'ne', 'w', 'e', 'n', 's']}
-  //       onResize={(event) => {
-  //         console.log(event);
-  //       }}
-  //     >
-  //       {/* <img src={element.url} title={element.title} alt={element.title} height="100%" width="100%" /> */}
-  //       <div
-  //         style={{
-  //           border: `1px dashed black`,
-  //           height: '100%',
-  //           width: '100%',
-  //         }}
-  //       />
-  //     </ResizableBox>
-  //   </Draggable>
-  // )))}
 };
 
 export default LayoutCanvas;
