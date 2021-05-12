@@ -71,7 +71,9 @@ const MoodboardEditorContainer = ({sdk}: MoodboardEditorContainerProps) => {
   // entryField.setValue(testInitialState);
 
   // TODO: load from contentful
-  const [fieldData, setFieldData] = useState<FieldData>(testInitialState as FieldData);
+  const [fieldData, setFieldData] = useState<FieldData>(
+    entryField.getValue() as FieldData,
+  );
   
   // If you only want to extend Contentful's default editing experience
   // reuse Contentful's editor components

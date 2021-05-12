@@ -37,18 +37,20 @@ const LayoutContainer = ({ sdk }: LayoutContainerProps) => {
 
   console.log({ existingState });
 
-  const [settings, setSettings] = useState<LayoutSettings>({
-    layoutId: '',
-    title: '',
-    enabled: true,
-    aspectRatio: '5:4',
-    maxWidth: 0,
-    isValid: false,
-  });
+  // const [settings, setSettings] = useState<LayoutSettings>({
+  //   layoutId: '',
+  //   title: '',
+  //   enabled: true,
+  //   aspectRatio: '5:4',
+  //   maxWidth: 0,
+  //   isValid: false,
+  // });
 
   const [layout, setlayout] = useState<Layout>({
     ...(existingState || initialState),
   });
+
+  const {settings} = layout;
 
   const [images, setImages] = useState<Image[]>([]);
 
@@ -59,16 +61,18 @@ const LayoutContainer = ({ sdk }: LayoutContainerProps) => {
 
   const handleSettingsUpdate = (settings: LayoutSettings) => {
     console.log(`Settings updated ${JSON.stringify(settings)}`);
-    setSettings({ ...settings });
+    setlayout({...layout, settings})
+    // setSettings({ ...settings });
+
   };
 
   const handleSave = () => {
     sdk.close(layout);
   };
 
-  useEffect(() => {
-    setlayout({ ...layout, settings: { ...settings } });
-  }, [settings]);
+  // useEffect(() => {
+  //   setlayout({ ...layout, settings: { ...settings } });
+  // }, [settings]);
 
   useEffect(() => {
     console.log({ layout });
