@@ -37,14 +37,16 @@ const LayoutCanvas = ({ layout, onDragResize }: LayoutCanvasProps) => {
           >
             <div
               style={{
-                backgroundColor: 'hotpink',
                 width: '100%',
                 height: '100%',
                 border: '2px solid black',
+                backgroundImage: `url(${asset.element.url})`,
+                backgroundRepeat: 'no-repeat',
+                backgroundPosition: 'center center',
+                backgroundSize: 'contain'
+
               }}
-            >
-              {/* <img src={asset.element.url} /> */}
-            </div>
+            ></div>
           </ResizableBox>
         );
       })}
