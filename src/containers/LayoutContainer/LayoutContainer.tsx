@@ -5,7 +5,12 @@ import LayoutTabs from '../../components/LayoutTabs';
 import LayoutSettingsPanel from '../../components/LayoutSettingsPanel';
 import LayoutElementsPanel from '../../components/LayoutElementsPanel';
 
-import { DialogInvocationParams, Layout, LayoutSettings } from '../../types';
+import {
+  DialogInvocationParams,
+  Draggable,
+  Layout,
+  LayoutSettings,
+} from '../../types';
 
 type LayoutContainerProps = {
   sdk: DialogExtensionSDK;
@@ -15,7 +20,20 @@ const LayoutContainer = ({ sdk }: LayoutContainerProps) => {
   const params = sdk.parameters?.invocation as DialogInvocationParams;
   const { currentLayoutId, layoutIds, entryField, assets } = params;
 
-console.log({ assets });
+  const initialAssetState = assets.map((asset) => {
+    const { height, width } = asset;
+
+    return {
+      published: false,
+      height,
+      width,
+      originalHeight: height,
+      originalWidth: width,
+      top: 0,
+      left: 0,
+      asset,
+    } as Draggable;
+  });
 
   const initialState: Layout = {
     settings: {
@@ -26,7 +44,7 @@ console.log({ assets });
       maxWidth: 0,
       isValid: false,
     },
-    elements: [],
+    elements: initialAssetState,
   };
 
   const existingState = currentLayoutId && entryField?.[currentLayoutId];
@@ -43,6 +61,19 @@ console.log({ assets });
 
   const handleSave = () => {
     sdk.close(layout);
+  };
+
+  const handleSetPublishAsset = (id: number, value: boolean) => {
+    const elements = layout.elements;
+    elements[id] = {
+      ...elements[id],
+      published: value,
+    };
+
+    setlayout({
+      ...layout,
+      elements,
+    });
   };
 
   // useEffect(() => {
@@ -92,7 +123,12 @@ console.log({ assets });
               id: 'elements',
               label: 'Elements',
               disabled: elementsPanelDisabled,
-              panel: <LayoutElementsPanel elements={assets} />,
+              panel: (
+                <LayoutElementsPanel
+                  elements={layout.elements}
+                  onSetPublish={handleSetPublishAsset}
+                />
+              ),
             },
             {
               id: 'layout',

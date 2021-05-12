@@ -26,9 +26,6 @@ const MoodboardEditorContainer = ({sdk}: MoodboardEditorContainerProps) => {
   const entryField = sdk.entry.fields[ENTRY_FIELD_ID];
   const assetField = sdk.entry.fields[ASSETS_FIELD_ID];
 
-
-  // getAssets({ sdk, callback: setAssets });
-
   const testInitialState = {
     'test-1': {
       settings: {
@@ -134,6 +131,9 @@ const MoodboardEditorContainer = ({sdk}: MoodboardEditorContainerProps) => {
 
   useEffect(() => {
     const detach = assetField.onValueChanged((value) => {
+
+      console.log('something changed');
+
       if (!sdk) {
         return;
       }
@@ -192,6 +192,15 @@ const MoodboardEditorContainer = ({sdk}: MoodboardEditorContainerProps) => {
   // useEffect(() => {
   //   console.log({ assets } );
   // }, [assets]);
+
+  useEffect(() => {
+    const detach = entryField.onValueChanged(() => {
+      console.log(`Updating height for entry field`);
+      sdk.window.updateHeight();
+    });
+    return () => detach();
+  }, [entryField, sdk]);
+
 
   const emptyState = (
     <Card>

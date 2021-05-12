@@ -5,21 +5,34 @@ import {
   DropdownList,
   DropdownListItem,
 } from '@contentful/forma-36-react-components';
-import { Asset } from '../../types';
+import { Asset, Draggable } from '../../types';
 
 type LayoutElementsPanelProps = {
-  elements: Asset[];
+  elements: Draggable[];
+  onSetPublish: (id: number, value: boolean) => void;
 };
 
-const LayoutElementsPanel = ({ elements }: LayoutElementsPanelProps) => {
+const LayoutElementsPanel = ({
+  elements,
+  onSetPublish,
+}: LayoutElementsPanelProps) => {
+  const assetList = elements.filter((element) => element.asset);
+
   console.log({ elements });
+
+  // const handleSetPublishState = (index: number, value: boolean) => {
+  //   console.log(
+  //     `handleSetPublishState ${value ? 'published' : 'unpublished'}`,
+  //   );
+  // }
 
   return (
     <div style={{ width: '100%' }}>
       <EntityList>
-        {elements.map((asset) => {
-          
-          const thumbnail = asset.type === 'image/jpeg' ? asset.element.url : '';
+        {assetList.map((element, index) => {
+          const { asset } = element;
+          const thumbnail =
+            asset.type === 'image/jpeg' ? asset.element.url : '';
 
           return (
             <EntityListItem
@@ -27,13 +40,15 @@ const LayoutElementsPanel = ({ elements }: LayoutElementsPanelProps) => {
               description={`Filename: ${asset.filename}`}
               withThumbnail={asset.type === 'image/jpeg'}
               thumbnailUrl={thumbnail}
-              status="published"
+              status={element.published ? 'published' : 'draft'}
               dropdownListElements={
                 <DropdownList>
                   <DropdownListItem isTitle>Actions</DropdownListItem>
-                  <DropdownListItem>Edit</DropdownListItem>
-                  <DropdownListItem>Download</DropdownListItem>
-                  <DropdownListItem>Remove</DropdownListItem>
+                  <DropdownListItem
+                    onClick={() => onSetPublish(index, !element.published)}
+                  >
+                    {element.published ? 'Unpublish' : 'Publish'}
+                  </DropdownListItem>
                 </DropdownList>
               }
             />

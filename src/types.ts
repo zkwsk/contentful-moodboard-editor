@@ -26,11 +26,13 @@ export type Draggable = {
   originalWidth: number;
   top: number;
   left: number;
-  element: Asset | Text;
+  asset: Asset;
+  textElement?: Text;
 };
 
 export type Text = {
   innerText: string;
+  type: 'text';
   element: 'h1' | 'h2' | 'h3' | 'h4' | 'p';
 };
 
