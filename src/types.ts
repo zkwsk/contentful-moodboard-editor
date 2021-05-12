@@ -16,6 +16,10 @@ export type LayoutSettings = {
   aspectRatio: string;
   maxWidth: number;
   isValid: boolean;
+  snap?: {
+    x?: number;
+    y?: number;
+  };
 };
 
 export type Draggable = {
@@ -42,7 +46,7 @@ export type Asset = {
   id: string;
   filename: string;
   title: string;
-  type: 'image/jpeg' | 'video/mp4';
+  type: 'image/jpeg' | 'image/png' | 'video/mp4';
   width: number;
   height: number;
   element: Image | Video;

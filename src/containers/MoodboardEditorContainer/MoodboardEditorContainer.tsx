@@ -19,9 +19,7 @@ interface MoodboardEditorContainerProps {
 
 
 const MoodboardEditorContainer = ({sdk}: MoodboardEditorContainerProps) => {
-
   const [assets, setAssets] = useState<Asset[]>([]);
-
 
   const entryField = sdk.entry.fields[ENTRY_FIELD_ID];
   const assetField = sdk.entry.fields[ASSETS_FIELD_ID];
@@ -54,15 +52,15 @@ const MoodboardEditorContainer = ({sdk}: MoodboardEditorContainerProps) => {
             height: 480,
             element: {
               url: 'https://fakeimg.pl/640x480',
-              alt: "This is fake",
-              description: "A fake image"
+              alt: 'This is fake',
+              description: 'A fake image',
             },
           },
         },
       ],
     },
   };
-  
+
   // Reset state
   // entryField.setValue(testInitialState);
 
@@ -70,17 +68,17 @@ const MoodboardEditorContainer = ({sdk}: MoodboardEditorContainerProps) => {
   const [fieldData, setFieldData] = useState<FieldData>(
     entryField.getValue() as FieldData,
   );
-  
+
   // If you only want to extend Contentful's default editing experience
   // reuse Contentful's editor components
   // -> https://www.contentful.com/developers/docs/extensibility/field-editors/
 
-  const layoutIds = entryField ? Object.keys(entryField) : [];
+  const layoutIds = entryField ? Object.keys(entryField) : [];
 
   const openDialog = async (options: unknown) => {
     // @ts-ignore
     const updatedLayout = await sdk.dialogs.openCurrentApp(options);
-    updatedLayout && saveLayout({field: entryField, updatedLayout });
+    updatedLayout && saveLayout({ field: entryField, updatedLayout });
   };
 
   const defaultDialogOptions = {
@@ -130,10 +128,8 @@ const MoodboardEditorContainer = ({sdk}: MoodboardEditorContainerProps) => {
   };
 
   useEffect(() => {
+    // Listen for changes on the asset field.
     const detach = assetField.onValueChanged((value) => {
-
-      console.log('something changed');
-
       if (!sdk) {
         return;
       }
@@ -178,6 +174,7 @@ const MoodboardEditorContainer = ({sdk}: MoodboardEditorContainerProps) => {
             };
           },
         );
+        console.log({ parsedImages });
         setAssets(parsedImages);
       });
     });
@@ -190,7 +187,7 @@ const MoodboardEditorContainer = ({sdk}: MoodboardEditorContainerProps) => {
   // }, [fieldData])
 
   // useEffect(() => {
-  //   console.log({ assets } );
+  //   console.log({ assets });
   // }, [assets]);
 
   useEffect(() => {
@@ -200,14 +197,25 @@ const MoodboardEditorContainer = ({sdk}: MoodboardEditorContainerProps) => {
     return () => detach();
   }, [entryField, sdk]);
 
-
   const emptyState = (
-    <Card>
-      <Typography>
-        <Paragraph>Please add some assets and at least one layout for the Moodboard to display.</Paragraph>
-      </Typography>
-    </Card>
-  )
+    <>
+      <Card>
+        <Typography>
+          <Paragraph>
+            Please add some assets and at least one layout for the Moodboard to
+            display.
+          </Paragraph>
+        </Typography>
+      </Card>
+      <Button
+        icon="Plus"
+        style={{ marginTop: 'var(--spacing-m)' }}
+        onClick={() => handleCreate()}
+      >
+        Add layout
+      </Button>
+    </>
+  );
 
   return fieldData && Object.keys(fieldData).length >= 0 ? (
     <>

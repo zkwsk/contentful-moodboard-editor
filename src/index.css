@@ -8,3 +8,8 @@ div {
   font: inherit;
   vertical-align: baseline;
 }
+
+.workbench-full-width > * {
+  margin: 0;
+  max-width: none;
+}

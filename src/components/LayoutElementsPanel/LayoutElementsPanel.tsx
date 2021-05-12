@@ -5,7 +5,7 @@ import {
   DropdownList,
   DropdownListItem,
 } from '@contentful/forma-36-react-components';
-import { Asset, Draggable } from '../../types';
+import { Draggable } from '../../types';
 
 type LayoutElementsPanelProps = {
   elements: Draggable[];
@@ -18,14 +18,6 @@ const LayoutElementsPanel = ({
 }: LayoutElementsPanelProps) => {
   const assetList = elements.filter((element) => element.asset);
 
-  console.log({ elements });
-
-  // const handleSetPublishState = (index: number, value: boolean) => {
-  //   console.log(
-  //     `handleSetPublishState ${value ? 'published' : 'unpublished'}`,
-  //   );
-  // }
-
   return (
     <div style={{ width: '100%' }}>
       <EntityList>
@@ -36,6 +28,7 @@ const LayoutElementsPanel = ({
 
           return (
             <EntityListItem
+              key={asset.filename}
               title={asset.title}
               description={`Filename: ${asset.filename}`}
               withThumbnail={asset.type === 'image/jpeg'}

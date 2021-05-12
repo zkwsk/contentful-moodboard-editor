@@ -21,13 +21,41 @@ const LayoutContainer = ({ sdk }: LayoutContainerProps) => {
   const params = sdk.parameters?.invocation as DialogInvocationParams;
   const { currentLayoutId, layoutIds, entryField, assets } = params;
 
+  const constrainMaxWidth = ({
+    width,
+    height,
+    constraint,
+  }: {
+    height: number;
+    width: number;
+    constraint: number;
+  }) => {
+    if (width < constraint) {
+      return {
+        height,
+        width,
+      };
+    }
+
+    const ratio = constraint / width;
+
+    return {
+      maxWidth: ratio * width,
+      maxHeight: ratio * height,
+    };
+  };
+
   const initialAssetState = assets.map((asset) => {
+    debugger;
     const { height, width } = asset;
+    const { maxHeight, maxWidth } = constrainMaxWidth({
+      height: asset.height, width: asset.width, constraint: 600
+    });
 
     return {
       published: false,
-      height,
-      width,
+      height: maxHeight,
+      width: maxWidth,
       originalHeight: height,
       originalWidth: width,
       position: {
@@ -50,16 +78,44 @@ const LayoutContainer = ({ sdk }: LayoutContainerProps) => {
     elements: initialAssetState,
   };
 
-  const existingState = currentLayoutId && entryField?.[currentLayoutId];
 
-  const [layout, setlayout] = useState<Layout>({
-    ...(existingState || initialState),
-  });
+  const mergeState = (assetState: Layout, existingState?: Layout) => {
+    if (!existingState) {
+      // We're creating a new record
+      return assetState;
+    }
 
-  const {settings} = layout;
+    const assetIds = assetState.elements.map(({asset}) => asset.id);
+
+    // Filter existing state so only records that match ids on asset state are 
+    // included. This is done to take account for assets being deleted.
+    const filteredExistingElements = existingState.elements.filter((({asset}) => assetIds.includes(asset.id)))
+
+    const existingStateIds = filteredExistingElements.map(
+      ({ asset }) => asset.id,
+    );
+
+    const newElements = assetState.elements.filter(({ asset }) =>
+      !existingStateIds.includes(asset.id),
+    );
+
+    return {
+      ...existingState,
+      elements: [...filteredExistingElements, ...newElements],
+    } as Layout;
+  };
+
+  const existingState =
+    (currentLayoutId && entryField?.[currentLayoutId]) || undefined;
+
+  const [layout, setlayout] = useState<Layout>(
+    mergeState(initialState, existingState),
+  );
+
+  const { settings } = layout;
 
   const handleSettingsUpdate = (settings: LayoutSettings) => {
-    setlayout({...layout, settings})
+    setlayout({ ...layout, settings });
   };
 
   const handleSave = () => {
@@ -82,8 +138,6 @@ const LayoutContainer = ({ sdk }: LayoutContainerProps) => {
   const handleDragResize = (index: number, value: Draggable) => {
     const updatedState = { ...layout };
     updatedState.elements[index] = value;
-
-    console.log({ updatedState });
     setlayout(updatedState);
   };
 
@@ -115,7 +169,7 @@ const LayoutContainer = ({ sdk }: LayoutContainerProps) => {
           sdk.close();
         }}
       />
-      <Workbench.Content type="default">
+      <Workbench.Content type="default" className="workbench-full-width">
         <LayoutTabs
           elements={[
             {
@@ -154,6 +208,6 @@ const LayoutContainer = ({ sdk }: LayoutContainerProps) => {
       </Workbench.Content>
     </Workbench>
   );
-}
+};
 
 export default LayoutContainer;

@@ -4,6 +4,7 @@ import { ResizableBox } from 'react-resizable';
 import { Draggable as DraggableType, Layout } from '../../types';
 
 import 'react-resizable/css/styles.css';
+import { LayoutCanvasElement } from './LayoutCanvasElement';
 
 type LayoutCanvasProps = {
   layout: Layout;
@@ -14,21 +15,27 @@ const LayoutCanvas = ({ layout, onDragResize }: LayoutCanvasProps) => {
   const { elements, settings } = layout;
   const publishedElements = elements.filter(({ published }) => published);
 
-  console.log({ publishedElements });
-
   const [aspectX, aspectY] = settings.aspectRatio.split(':').map(element => parseInt(element, 10)) as [number, number];
-
-  const aspect = aspectX / aspectY;
-  const aspectPercent = (aspectY / aspectX) * 100 + '%';
 
   // TODO: Disabled. Currently bounds are offset by the previous elements height
   const bounds = false && {
     top: 0,
     left: 0
   }
+  const grid = [
+    settings?.snap?.x ? settings.snap.x : 1,
+    settings?.snap?.y ? settings.snap.y : 1,
+  ] as [number, number];
 
   return (
-    <div style={{border: "1px dotted black", height: 0, paddingBottom: aspectPercent}}>
+    <div
+      style={{
+        border: '1px dotted black',
+        width: settings.maxWidth,
+        height: (aspectY / aspectX) * settings.maxWidth + 'px',
+        marginTop: 'var(--spacing-m)',
+      }}
+    >
       {publishedElements.map((element, index) => {
         const {
           height,
@@ -39,6 +46,7 @@ const LayoutCanvas = ({ layout, onDragResize }: LayoutCanvasProps) => {
         return (
           <Draggable
             key={asset.id}
+            grid={grid}
             bounds={bounds}
             defaultPosition={{ x, y }}
             cancel={'.react-resizable-handle'}
@@ -62,16 +70,7 @@ const LayoutCanvas = ({ layout, onDragResize }: LayoutCanvasProps) => {
                 });
               }}
             >
-              <div
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  backgroundImage: `url(${asset.element.url})`,
-                  backgroundRepeat: 'no-repeat',
-                  backgroundPosition: 'center center',
-                  backgroundSize: 'contain',
-                }}
-              ></div>
+              <LayoutCanvasElement element={element} />
             </ResizableBox>
           </Draggable>
         );

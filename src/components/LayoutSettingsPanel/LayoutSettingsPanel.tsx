@@ -9,6 +9,7 @@ import {
 import isEqual from "lodash-es/isEqual";
 
 import { usePrevious } from "../../utilities/usePrevious";
+import s from '../../utilities/stringify';
 
 
 import { LayoutSettings } from '../../types';
@@ -29,7 +30,6 @@ const LayoutSettingsPanel = ({
     aspectRatio: ''
   })
   const [state, setState] = useState(settings);
-  const prevState = usePrevious(state);
   const prevValidation = usePrevious(validation);
 
   const isTitleValid = (input: string) => {
@@ -154,7 +154,6 @@ const LayoutSettingsPanel = ({
     >
       <Form
         style={{ marginTop: 'var(--spacing-2xl)', maxWidth: '30em' }}
-        onSubmit={() => console.log('submit')}
         spacing="default"
       >
         <FieldGroup>
@@ -172,7 +171,7 @@ const LayoutSettingsPanel = ({
 
               // if (isTitleValid(value)) {
               //   const layoutId = generateId(value);
-                
+
               //   if (isIdDuplicated(layoutId)) {
               //     setValidation({...validation, title: 'There is already a layout with the same title'});
               //   } else {
@@ -182,7 +181,6 @@ const LayoutSettingsPanel = ({
               // } else {
               //   setValidation({...validation, title: 'Invalid title. Use alphanumeric characters, 0-9 and _ only.'})
               // }
-              
             }}
             onBlur={persistState}
             validationMessage={validation.title}
@@ -210,7 +208,7 @@ const LayoutSettingsPanel = ({
             helpText="The size of the moodboard is dynamic to the page width. By entering an aspect ratio you define how tall the moodboard will be."
             validationMessage={validation.aspectRatio}
             onChange={(event) => {
-              setState({...state, aspectRatio: event.currentTarget.value});
+              setState({ ...state, aspectRatio: event.currentTarget.value });
             }}
             onBlur={persistState}
           />
@@ -218,9 +216,52 @@ const LayoutSettingsPanel = ({
             name="maxWidth"
             id="maxWidth"
             labelText="Max width"
-            textInputProps={{ placeholder: '880px' }}
-            value={state.maxWidth ? `${state.maxWidth}px` : ''}
+            // textInputProps={{ placeholder: '880px' }}
+            value={s(state.maxWidth)}
+            onChange={(event) => {
+              setState({
+                ...state,
+                maxWidth: parseInt(event.currentTarget.value, 10) || 2000,
+              });
+            }}
+            onBlur={persistState}
             helpText="The maximum screen width in pixels this layout will be effective at. If you do not supply a max width the layout will stay in effect at the widest possible width of the site. If another layout with a narrower width is present, that layout will take precedense at narrower widths."
+          />
+          <TextField
+            name="snapX"
+            id="snapX"
+            labelText="Snap value X-axis"
+            // textInputProps={{ placeholder: '880px' }}
+            value={state.snap?.x ? s(state.snap.x) : ''}
+            onChange={(event) => {
+              setState({
+                ...state,
+                snap: {
+                  ...state.snap,
+                  x: parseInt(event.currentTarget.value, 10),
+                },
+              });
+            }}
+            onBlur={persistState}
+            helpText="The number of pixels resizing and dragging should snap to on the x axis."
+          />
+          <TextField
+            name="snapY"
+            id="snapY"
+            labelText="Snap value Y-axis"
+            // textInputProps={{ placeholder: '880px' }}
+            value={state.snap?.y ? s(state.snap.y) : ''}
+            onChange={(event) => {
+              setState({
+                ...state,
+                snap: {
+                  ...state.snap,
+                  y: parseInt(event.currentTarget.value, 10),
+                },
+              });
+            }}
+            onBlur={persistState}
+            helpText="The number of pixels resizing and dragging should snap to on the y axis."
           />
         </FieldGroup>
       </Form>
