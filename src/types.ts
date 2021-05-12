@@ -24,8 +24,10 @@ export type Draggable = {
   width: number;
   originalHeight: number;
   originalWidth: number;
-  top: number;
-  left: number;
+  position: {
+    x: number;
+    y: number;
+  };
   asset: Asset;
   textElement?: Text;
 };

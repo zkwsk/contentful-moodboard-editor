@@ -11,6 +11,7 @@ import {
   Layout,
   LayoutSettings,
 } from '../../types';
+import LayoutCanvas from '../../components/LayoutCanvas';
 
 type LayoutContainerProps = {
   sdk: DialogExtensionSDK;
@@ -29,8 +30,10 @@ const LayoutContainer = ({ sdk }: LayoutContainerProps) => {
       width,
       originalHeight: height,
       originalWidth: width,
-      top: 0,
-      left: 0,
+      position: {
+        x: 0,
+        y: 0,
+      },
       asset,
     } as Draggable;
   });
@@ -74,6 +77,14 @@ const LayoutContainer = ({ sdk }: LayoutContainerProps) => {
       ...layout,
       elements,
     });
+  };
+
+  const handleDragResize = (index: number, value: Draggable) => {
+    const updatedState = { ...layout };
+    updatedState.elements[index] = value;
+
+    console.log({ updatedState });
+    setlayout(updatedState);
   };
 
   // useEffect(() => {
@@ -134,7 +145,9 @@ const LayoutContainer = ({ sdk }: LayoutContainerProps) => {
               id: 'layout',
               label: 'Layout',
               disabled: layoutPanelDisabled,
-              panel: <h1>Layout page</h1>,
+              panel: (
+                <LayoutCanvas layout={layout} onDragResize={handleDragResize} />
+              ),
             },
           ]}
         />

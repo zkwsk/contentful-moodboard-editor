@@ -195,7 +195,6 @@ const MoodboardEditorContainer = ({sdk}: MoodboardEditorContainerProps) => {
 
   useEffect(() => {
     const detach = entryField.onValueChanged(() => {
-      console.log(`Updating height for entry field`);
       sdk.window.updateHeight();
     });
     return () => detach();
