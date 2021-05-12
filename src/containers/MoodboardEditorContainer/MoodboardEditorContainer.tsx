@@ -14,6 +14,7 @@ import { Asset, DialogInvocationParams, Image, Video } from '../../types';
 import objectIsEmpty from "../../utilities/objectIsEmpty";
 
 import { FieldData, Layout } from "../../types";
+import Field from '../../components/Field';
 interface MoodboardEditorContainerProps {
   sdk: FieldExtensionSDK;
 }
@@ -94,44 +95,51 @@ const MoodboardEditorContainer = ({sdk}: MoodboardEditorContainerProps) => {
     updatedLayout && saveLayout({field: entryField, updatedLayout });
   };
 
+  const defaultDialogParameters = {
+    width: 'fullWidth',
+    minHeight: '90vh',
+    parameters: {
+      assets,
+      entryField: entryField.getValue(),
+      layoutIds,
+    },
+  };
+
   const handleEdit = async (currentLayoutId: string) => {
     openDialog({
-      // title: 'Edit Layout',
-      width: 'fullWidth',
-      minHeight: '90vh',
+      ...defaultDialogParameters,
       parameters: { ...dialogParameters, currentLayoutId },
     });
   };
 
   const handleCreate = async () => {
-    // const saved = await sdk.dialogs.openCurrentApp({
-    //   title: 'Create Layout',
-    //   width: 'fullWidth',
-    //   minHeight: '90vh',
-    //   parameters: dialogParameters,
-    // });
     openDialog({
-      width: 'fullWidth',
-      minHeight: '90vh',
-      parameters: dialogParameters,
+      ...defaultDialogParameters,
     });
   };
 
-  const handleRemove = (id: string) => {
+  const handleRemove = async (id: string, field: EntryFieldAPI) => {
     // TODO: Make a warning alert
     let modified = { ...fieldData };
     delete modified[id];
-
     setFieldData(modified);
-  }
+    field.setValue(modified);
+  };
 
-  const saveLayout = ({field, updatedLayout }: { field: EntryFieldAPI; updatedLayout: Layout;})=> {
+  const saveLayout = async ({
+    field,
+    updatedLayout,
+  }: {
+    field: EntryFieldAPI;
+    updatedLayout: Layout;
+  }) => {
+    const {
+      settings: { layoutId },
+    } = updatedLayout;
 
-
-    const {settings:{layoutId}} = updatedLayout;
-
-    field.setValue({ ...field.getValue(), [layoutId]: updatedLayout });
-  }
+    await field.setValue({ ...field.getValue(), [layoutId]: updatedLayout });
+    setFieldData(field.getValue());
+  };
 
   useEffect(() => {
     const detach = assetField.onValueChanged((value) => {
@@ -205,20 +213,44 @@ const MoodboardEditorContainer = ({sdk}: MoodboardEditorContainerProps) => {
   return fieldData && Object.keys(fieldData).length >= 0 ? (
     <>
       <EntityList>
-        {Object.entries(fieldData).map(([id, {settings: {title}}]) => (
-          <EntityListItem key={id} title={title} dropdownListElements={
-            <DropdownList>
-              <DropdownListItem onClick={() => handleEdit(id)}>Edit</DropdownListItem>
-              <DropdownListItem onClick={() => handleRemove(id)}>Remove</DropdownListItem>
-            </DropdownList>
-            }
-            onClick={() => handleEdit(id)}
-          />)
+        {Object.entries(fieldData).map(
+          ([
+            id,
+            {
+              settings: { title },
+            },
+          ]) => (
+            <EntityListItem
+              key={id}
+              title={title}
+              dropdownListElements={
+                <DropdownList>
+                  <DropdownListItem onClick={() => handleEdit(id)}>
+                    Edit
+                  </DropdownListItem>
+                  <DropdownListItem
+                    onClick={() => handleRemove(id, entryField)}
+                  >
+                    Remove
+                  </DropdownListItem>
+                </DropdownList>
+              }
+              onClick={() => handleEdit(id)}
+            />
+          ),
         )}
       </EntityList>
-      <Button icon="Plus" style={{marginTop: "var(--spacing-m)"}} onClick={() => handleCreate()}>Add layout</Button>
+      <Button
+        icon="Plus"
+        style={{ marginTop: 'var(--spacing-m)' }}
+        onClick={() => handleCreate()}
+      >
+        Add layout
+      </Button>
     </>
-  ) : emptyState
+  ) : (
+    emptyState
+  );
 };
 
 export default MoodboardEditorContainer;
