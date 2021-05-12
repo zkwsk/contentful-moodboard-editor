@@ -17,6 +17,26 @@ const LayoutContainer = ({ sdk }: LayoutContainerProps) => {
   const params = sdk.parameters?.invocation as DialogInvocationParams;
   const { currentLayoutId, layoutIds, entryField, assets } = params;
 
+  console.log({ params });
+
+  const initialState: Layout = {
+    settings: {
+      layoutId: '',
+      title: '',
+      enabled: true,
+      aspectRatio: '5:4',
+      maxWidth: 0,
+      isValid: false,
+    },
+    elements: [],
+  };
+
+  debugger;
+  const existingState = currentLayoutId && entryField?.[currentLayoutId];
+  //currentLayoutId && entryField && entryField[currentLayoutId];
+
+  console.log({ existingState });
+
   const [settings, setSettings] = useState<LayoutSettings>({
     layoutId: '',
     title: '',
@@ -27,16 +47,15 @@ const LayoutContainer = ({ sdk }: LayoutContainerProps) => {
   });
 
   const [layout, setlayout] = useState<Layout>({
-    settings: {...settings},
-    elements: []
+    ...(existingState || initialState),
   });
-  
-  const [images, setImages] = useState<Image[]>([]);
 
-  // sdk.close(layout);
+  const [images, setImages] = useState<Image[]>([]);
 
   // TODO: Set initial values only on new records
   const newRecord = !currentLayoutId;
+
+  console.log({ newRecord });
 
   const handleSettingsUpdate = (settings: LayoutSettings) => {
     console.log(`Settings updated ${JSON.stringify(settings)}`);
@@ -45,15 +64,15 @@ const LayoutContainer = ({ sdk }: LayoutContainerProps) => {
 
   const handleSave = () => {
     sdk.close(layout);
-  }
+  };
 
   useEffect(() => {
     setlayout({ ...layout, settings: { ...settings } });
   }, [settings]);
 
   useEffect(() => {
-    console.log({  layout  });;
-  }, [layout]);;
+    console.log({ layout });
+  }, [layout]);
 
   const elementsPanelDisabled = !(
     settings.isValid &&
@@ -68,7 +87,11 @@ const LayoutContainer = ({ sdk }: LayoutContainerProps) => {
     <Workbench>
       <Workbench.Header
         title="Create Layout"
-        actions={<Button disabled={!(settings.isValid)} onClick={handleSave}>Save</Button>}
+        actions={
+          <Button disabled={!settings.isValid} onClick={handleSave}>
+            Save
+          </Button>
+        }
         onBack={() => {
           sdk.close();
         }}
@@ -105,6 +128,6 @@ const LayoutContainer = ({ sdk }: LayoutContainerProps) => {
       </Workbench.Content>
     </Workbench>
   );
-};;
+};;;;
 
 export default LayoutContainer;

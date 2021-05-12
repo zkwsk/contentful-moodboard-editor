@@ -1,3 +1,9 @@
+export type FieldData =
+  | {
+      [key: string]: Layout;
+    }
+  | undefined;
+
 export type Layout = {
   settings: LayoutSettings;
   elements: Draggable[];
@@ -54,6 +60,6 @@ export type Video = {
 export interface DialogInvocationParams {
   currentLayoutId?: string;
   layoutIds: string[];
-  entryField: Layout;
+  entryField: FieldData;
   assets: Image[];
 }
