@@ -5,9 +5,7 @@ import LayoutTabs from '../../components/LayoutTabs';
 import LayoutSettingsPanel from '../../components/LayoutSettingsPanel';
 import LayoutElementsPanel from '../../components/LayoutElementsPanel';
 
-import { ASSETS_FIELD_ID } from '../../constants';
-
-import { DialogInvocationParams, Image, Layout, LayoutSettings } from '../../types';
+import { DialogInvocationParams, Layout, LayoutSettings } from '../../types';
 
 type LayoutContainerProps = {
   sdk: DialogExtensionSDK;
@@ -16,8 +14,6 @@ type LayoutContainerProps = {
 const LayoutContainer = ({ sdk }: LayoutContainerProps) => {
   const params = sdk.parameters?.invocation as DialogInvocationParams;
   const { currentLayoutId, layoutIds, entryField, assets } = params;
-
-  console.log({ params });
 
   const initialState: Layout = {
     settings: {
@@ -31,20 +27,7 @@ const LayoutContainer = ({ sdk }: LayoutContainerProps) => {
     elements: [],
   };
 
-  debugger;
   const existingState = currentLayoutId && entryField?.[currentLayoutId];
-  //currentLayoutId && entryField && entryField[currentLayoutId];
-
-  console.log({ existingState });
-
-  // const [settings, setSettings] = useState<LayoutSettings>({
-  //   layoutId: '',
-  //   title: '',
-  //   enabled: true,
-  //   aspectRatio: '5:4',
-  //   maxWidth: 0,
-  //   isValid: false,
-  // });
 
   const [layout, setlayout] = useState<Layout>({
     ...(existingState || initialState),
@@ -52,18 +35,8 @@ const LayoutContainer = ({ sdk }: LayoutContainerProps) => {
 
   const {settings} = layout;
 
-  const [images, setImages] = useState<Image[]>([]);
-
-  // TODO: Set initial values only on new records
-  const newRecord = !currentLayoutId;
-
-  console.log({ newRecord });
-
   const handleSettingsUpdate = (settings: LayoutSettings) => {
-    console.log(`Settings updated ${JSON.stringify(settings)}`);
     setlayout({...layout, settings})
-    // setSettings({ ...settings });
-
   };
 
   const handleSave = () => {
@@ -71,20 +44,18 @@ const LayoutContainer = ({ sdk }: LayoutContainerProps) => {
   };
 
   // useEffect(() => {
-  //   setlayout({ ...layout, settings: { ...settings } });
-  // }, [settings]);
-
-  useEffect(() => {
-    console.log({ layout });
-  }, [layout]);
+  //   console.log({ layout });
+  // }, [layout]);
 
   const elementsPanelDisabled = !(
     settings.isValid &&
     assets.length > 0 &&
     settings.enabled
   );
+
   // TODO: Make layout panel listen for whether any elements are
-  // enabled on elements panel.
+  // enabled on elements panel. Probably need to split valid into an object that
+  // can tell whether a given panel is valid.
   const layoutPanelDisabled = elementsPanelDisabled;
 
   return (
@@ -132,6 +103,6 @@ const LayoutContainer = ({ sdk }: LayoutContainerProps) => {
       </Workbench.Content>
     </Workbench>
   );
-};;;;
+}
 
 export default LayoutContainer;

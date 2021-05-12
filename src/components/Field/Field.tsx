@@ -19,7 +19,9 @@ const Field = (props: FieldProps) => {
   return (
     <>
       <MoodboardEditorContainer sdk={props.sdk} />
-      <JsonEditor field={props.sdk.field} isInitiallyDisabled />
+      <div style={{ marginTop: 'var(--spacing-m)' }}>
+        <JsonEditor field={props.sdk.field} isInitiallyDisabled />
+      </div>
     </>
   );
 };;

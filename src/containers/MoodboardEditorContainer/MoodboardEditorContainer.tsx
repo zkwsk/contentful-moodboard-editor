@@ -1,7 +1,6 @@
-import React, { useEffect, useState, MouseEvent } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Card, DropdownList, DropdownListItem, EntityList, EntityListItem, Paragraph, Typography } from '@contentful/forma-36-react-components';
 import {
-  OpenCustomWidgetOptions,
   FieldExtensionSDK,
   Link,
   EntryFieldAPI,
@@ -9,12 +8,11 @@ import {
 
 import { ENTRY_FIELD_ID, ASSETS_FIELD_ID } from '../../constants';
 
-import { Asset, DialogInvocationParams, Image, Video } from '../../types';
+import { Asset } from '../../types';
 
 import objectIsEmpty from "../../utilities/objectIsEmpty";
 
 import { FieldData, Layout } from "../../types";
-import Field from '../../components/Field';
 interface MoodboardEditorContainerProps {
   sdk: FieldExtensionSDK;
 }
