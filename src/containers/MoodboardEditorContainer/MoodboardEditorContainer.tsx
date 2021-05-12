@@ -80,20 +80,13 @@ const MoodboardEditorContainer = ({sdk}: MoodboardEditorContainerProps) => {
 
   const layoutIds = entryField ? Object.keys(entryField) : [];
 
-  const dialogParameters = {
-    assets,
-    entryField: entryField.getValue(),
-    layoutIds
-  };
-
-
   const openDialog = async (options: unknown) => {
     // @ts-ignore
     const updatedLayout = await sdk.dialogs.openCurrentApp(options);
     updatedLayout && saveLayout({field: entryField, updatedLayout });
   };
 
-  const defaultDialogParameters = {
+  const defaultDialogOptions = {
     width: 'fullWidth',
     minHeight: '90vh',
     parameters: {
@@ -105,14 +98,14 @@ const MoodboardEditorContainer = ({sdk}: MoodboardEditorContainerProps) => {
 
   const handleEdit = async (currentLayoutId: string) => {
     openDialog({
-      ...defaultDialogParameters,
-      parameters: { ...dialogParameters, currentLayoutId },
+      ...defaultDialogOptions,
+      parameters: { ...defaultDialogOptions.parameters, currentLayoutId },
     });
   };
 
   const handleCreate = async () => {
     openDialog({
-      ...defaultDialogParameters,
+      ...defaultDialogOptions,
     });
   };
 

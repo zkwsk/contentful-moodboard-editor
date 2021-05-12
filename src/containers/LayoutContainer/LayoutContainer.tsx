@@ -15,6 +15,8 @@ const LayoutContainer = ({ sdk }: LayoutContainerProps) => {
   const params = sdk.parameters?.invocation as DialogInvocationParams;
   const { currentLayoutId, layoutIds, entryField, assets } = params;
 
+console.log({ assets });
+
   const initialState: Layout = {
     settings: {
       layoutId: '',
@@ -90,7 +92,7 @@ const LayoutContainer = ({ sdk }: LayoutContainerProps) => {
               id: 'elements',
               label: 'Elements',
               disabled: elementsPanelDisabled,
-              panel: <LayoutElementsPanel elements={[]} />,
+              panel: <LayoutElementsPanel elements={assets} />,
             },
             {
               id: 'layout',

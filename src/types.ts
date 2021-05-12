@@ -44,22 +44,24 @@ export type Asset = {
   element: Image | Video;
 };
 
-export type Image = {
+type ImageOrVideoPartial = {
   url: string;
-  alt?: string;
   description?: string;
 };
 
+export type Image = {
+  alt?: string;
+} & ImageOrVideoPartial;
+
 export type Video = {
-  url: string;
   autoplay?: boolean;
   loop?: boolean;
   poster?: string;
-};
+} & ImageOrVideoPartial;
 
 export interface DialogInvocationParams {
   currentLayoutId?: string;
   layoutIds: string[];
   entryField: FieldData;
-  assets: Image[];
+  assets: Asset[];
 }

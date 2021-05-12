@@ -3,6 +3,9 @@ import { FieldExtensionSDK } from '@contentful/app-sdk';
 import MoodboardEditorContainer from '../../containers/MoodboardEditorContainer';
 import { JsonEditor } from '@contentful/field-editor-json';
 
+import '@contentful/forma-36-react-components/dist/styles.css';
+
+
 interface FieldProps {
   sdk: FieldExtensionSDK;
 }

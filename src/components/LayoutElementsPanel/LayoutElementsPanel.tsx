@@ -5,30 +5,40 @@ import {
   DropdownList,
   DropdownListItem,
 } from '@contentful/forma-36-react-components';
-import { Draggable } from '../../types';
+import { Asset } from '../../types';
 
 type LayoutElementsPanelProps = {
-  elements: Draggable[];
+  elements: Asset[];
 };
 
 const LayoutElementsPanel = ({ elements }: LayoutElementsPanelProps) => {
+  console.log({ elements });
+
   return (
     <div style={{ width: '100%' }}>
       <EntityList>
-        <EntityListItem
-          title="My image"
-          description="Some description"
-          thumbnailUrl="https://via.placeholder.com/400x400"
-          status="published"
-          dropdownListElements={
-            <DropdownList>
-              <DropdownListItem isTitle>Actions</DropdownListItem>
-              <DropdownListItem>Edit</DropdownListItem>
-              <DropdownListItem>Download</DropdownListItem>
-              <DropdownListItem>Remove</DropdownListItem>
-            </DropdownList>
-          }
-        />
+        {elements.map((asset) => {
+          
+          const thumbnail = asset.type === 'image/jpeg' ? asset.element.url : '';
+
+          return (
+            <EntityListItem
+              title={asset.title}
+              description={`Filename: ${asset.filename}`}
+              withThumbnail={asset.type === 'image/jpeg'}
+              thumbnailUrl={thumbnail}
+              status="published"
+              dropdownListElements={
+                <DropdownList>
+                  <DropdownListItem isTitle>Actions</DropdownListItem>
+                  <DropdownListItem>Edit</DropdownListItem>
+                  <DropdownListItem>Download</DropdownListItem>
+                  <DropdownListItem>Remove</DropdownListItem>
+                </DropdownList>
+              }
+            />
+          );
+        })}
       </EntityList>
     </div>
   );
