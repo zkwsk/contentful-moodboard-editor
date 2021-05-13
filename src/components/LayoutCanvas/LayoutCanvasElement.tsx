@@ -37,7 +37,7 @@ export const LayoutCanvasElement = ({ element }: { element: Draggable }) => {
     return Video;
   }
 
-  if (type === 'image/jpeg' || 'image/png') {
+  if (type === 'image/jpeg' || 'image/png' || 'image/gif') {
     return Image;
   }
   return null;
