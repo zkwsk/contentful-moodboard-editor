@@ -5,7 +5,7 @@ import LayoutTabs from '../../components/LayoutTabs';
 import LayoutSettingsPanel from '../../components/LayoutSettingsPanel';
 import LayoutElementsPanel from '../../components/LayoutElementsPanel';
 import constrainMaxWidth from './helpers/constrainMaxWidth';
-import mergeState from './helpers/mergeState';
+import mergeDraggableElements from './helpers/mergeDraggableElements';
 
 import {
   DialogInvocationParams,
@@ -23,38 +23,19 @@ const LayoutContainer = ({ sdk }: LayoutContainerProps) => {
   const params = sdk.parameters?.invocation as DialogInvocationParams;
   const { currentLayoutId, layoutIds, entryField, assets } = params;
 
-  const initialAssetState = assets.map((asset) => {
-    const { height, width } = asset;
-    const { maxHeight, maxWidth } = constrainMaxWidth({
-      height,
-      width,
-      constraint: 600,
-    });
-
-    return {
-      published: false,
-      height: maxHeight,
-      width: maxWidth,
-      originalHeight: height,
-      originalWidth: width,
-      position: {
-        x: 0,
-        y: 0,
-      },
-      asset,
-    } as Draggable;
-  });
+  const initialSettings = {
+    layoutId: '',
+    title: '',
+    enabled: true,
+    aspectRatio: '5:4',
+    maxWidth: 0,
+    isValid: false,
+  } as LayoutSettings;
 
   const initialState: Layout = {
-    settings: {
-      layoutId: '',
-      title: '',
-      enabled: true,
-      aspectRatio: '5:4',
-      maxWidth: 0,
-      isValid: false,
-    },
-    elements: initialAssetState,
+    settings: initialSettings,
+    elements: [],
+    // elements: initialAssetState,
   };
 
   const [layout, setlayout] = useState<Layout>(
@@ -78,6 +59,8 @@ const LayoutContainer = ({ sdk }: LayoutContainerProps) => {
       ...elements[id],
       published: value,
     };
+
+    debugger;
 
     setlayout({
       ...layout,
@@ -109,14 +92,47 @@ const LayoutContainer = ({ sdk }: LayoutContainerProps) => {
 
   useEffect(() => {
     debugger;
+    let settings = initialSettings;
+
     // If a an ID was passed in the parameters, load existing data from field
     if (currentLayoutId) {
       const persistedState = entryField?.[currentLayoutId];
       if (persistedState) {
         // const merged = mergeState(persistedState, initialState);
-        setlayout(persistedState);
+        // setlayout({ settings: persistedState.settings, elements: [] });
+        settings = persistedState.settings;
       }
     }
+
+    // Wrap assets in Draggable
+    const persisted = assets.map((asset) => {
+      const { height, width } = asset;
+      const constrainedDimensions = constrainMaxWidth({
+        width,
+        height,
+        constraint: 600,
+      });
+
+      return {
+        published: false,
+        originalHeight: height,
+        originalWidth: width,
+        position: {
+          x: 0,
+          y: 0,
+        },
+        asset,
+        ...constrainedDimensions,
+      } as Draggable;
+    });
+
+    const mergedElements = mergeDraggableElements({
+      persisted,
+      localState: layout.elements,
+    });
+
+    setlayout({ settings, elements: mergedElements });
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

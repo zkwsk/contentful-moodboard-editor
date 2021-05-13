@@ -6,8 +6,8 @@ describe('Test constrain max width', () => {
 
     const outputElement = constrainMaxWidth(mockLargeElement);
 
-    expect(outputElement.maxHeight).toBeLessThan(500);
-    expect(outputElement.maxWidth).toBe(500);
+    expect(outputElement.height).toBeLessThan(500);
+    expect(outputElement.width).toBe(500);
   });
 
   it('Will not constrain small element', () => {
@@ -15,7 +15,7 @@ describe('Test constrain max width', () => {
 
     const outputElement = constrainMaxWidth(mockSmallElement);
 
-    expect(outputElement.maxHeight).toBe(300);
-    expect(outputElement.maxWidth).toBe(450);
+    expect(outputElement.height).toBe(300);
+    expect(outputElement.width).toBe(450);
   });
 });

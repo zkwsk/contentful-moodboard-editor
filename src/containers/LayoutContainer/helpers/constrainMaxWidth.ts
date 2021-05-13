@@ -9,16 +9,16 @@ const constrainMaxWidth = ({
 }) => {
   if (width < constraint) {
     return {
-      maxHeight: height,
-      maxWidth: width,
+      height,
+      width,
     };
   }
 
   const ratio = constraint / width;
 
   return {
-    maxWidth: ratio * width,
-    maxHeight: ratio * height,
+    height: ratio * height,
+    width: ratio * width,
   };
 };
 
