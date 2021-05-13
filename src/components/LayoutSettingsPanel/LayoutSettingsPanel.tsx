@@ -38,8 +38,8 @@ const LayoutSettingsPanel = ({
   }
 
   const isIdDuplicated = (id: string) => {
-    return layoutIds.includes(id);
-  }
+    return layoutIds.includes(id) && id !== settings.layoutId;
+  };
 
   const generateId = (input: string) => {
     return paramCase(input.trim());
@@ -71,17 +71,11 @@ const LayoutSettingsPanel = ({
 
   // Validate title and layoutId
   useEffect(() => {
-    // if (isEqual(prevState?.title, state.title)) {
-    //   return;
-    // }
-    // if (isEqual(validation, prevValidation)) {
-    //   return;
-    // }
-    if (!(state.title)) {
+    debugger;
+    if (!state.title) {
       setValidation({
         ...validation,
-        title:
-          'You need to fill out a title',
+        title: 'You need to fill out a title',
       });
       return;
     }
@@ -101,8 +95,8 @@ const LayoutSettingsPanel = ({
       });
       return;
     }
-    setValidation({...validation, title: ''})
-  }, [state.title, state.layoutId])
+    setValidation({ ...validation, title: '' });
+  }, [state.title, state.layoutId]);
 
   // Validate aspect ratio
   useEffect(() => {
@@ -128,21 +122,11 @@ const LayoutSettingsPanel = ({
     }
   }, [settings]);
 
-  // useEffect(() => {
-  //   if (!state.isValid) {
-  //     onUpdate({ ...settings, isValid: state.isValid });
-  //   }
-  // }, [state.isValid])
-
   const persistState = () => {
     if (!isEqual(settings, state)) {
       onUpdate(state);
     }
   };
-
-  // const handleBlur = () => {
-  //   persistState();
-  // };
 
   return (
     <div
@@ -171,15 +155,21 @@ const LayoutSettingsPanel = ({
 
               // if (isTitleValid(value)) {
               //   const layoutId = generateId(value);
-
               //   if (isIdDuplicated(layoutId)) {
-              //     setValidation({...validation, title: 'There is already a layout with the same title'});
+              //     setValidation({
+              //       ...validation,
+              //       title: 'There is already a layout with the same title',
+              //     });
               //   } else {
-              //     setValidation({...validation, title: ''})
+              //     setValidation({ ...validation, title: '' });
               //     setState({ ...state, title: value, layoutId });
               //   }
               // } else {
-              //   setValidation({...validation, title: 'Invalid title. Use alphanumeric characters, 0-9 and _ only.'})
+              //   setValidation({
+              //     ...validation,
+              //     title:
+              //       'Invalid title. Use alphanumeric characters, 0-9 and _ only.',
+              //   });
               // }
             }}
             onBlur={persistState}

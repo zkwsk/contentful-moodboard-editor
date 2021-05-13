@@ -73,7 +73,7 @@ const MoodboardEditorContainer = ({sdk}: MoodboardEditorContainerProps) => {
   // reuse Contentful's editor components
   // -> https://www.contentful.com/developers/docs/extensibility/field-editors/
 
-  const layoutIds = entryField ? Object.keys(entryField) : [];
+  const layoutIds = entryField ? Object.keys(entryField.getValue()) : [];
 
   const openDialog = async (options: unknown) => {
     // @ts-ignore
