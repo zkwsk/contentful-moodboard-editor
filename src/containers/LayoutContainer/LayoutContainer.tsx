@@ -4,6 +4,8 @@ import { Button, Workbench } from '@contentful/forma-36-react-components';
 import LayoutTabs from '../../components/LayoutTabs';
 import LayoutSettingsPanel from '../../components/LayoutSettingsPanel';
 import LayoutElementsPanel from '../../components/LayoutElementsPanel';
+import constrainMaxWidth from './helpers/constrainMaxWidth';
+
 
 import {
   DialogInvocationParams,
@@ -21,29 +23,7 @@ const LayoutContainer = ({ sdk }: LayoutContainerProps) => {
   const params = sdk.parameters?.invocation as DialogInvocationParams;
   const { currentLayoutId, layoutIds, entryField, assets } = params;
 
-  const constrainMaxWidth = ({
-    width,
-    height,
-    constraint,
-  }: {
-    height: number;
-    width: number;
-    constraint: number;
-  }) => {
-    if (width < constraint) {
-      return {
-        maxHeight: height,
-        maxWidth: width,
-      };
-    }
 
-    const ratio = constraint / width;
-
-    return {
-      maxWidth: ratio * width,
-      maxHeight: ratio * height,
-    };
-  };
 
   const initialAssetState = assets.map((asset) => {
     debugger;
