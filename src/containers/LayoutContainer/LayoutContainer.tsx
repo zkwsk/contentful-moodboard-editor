@@ -76,10 +76,16 @@ const LayoutContainer = ({ sdk }: LayoutContainerProps) => {
     // });
   };
 
-  const handleDragResize = (index: number, value: Draggable) => {
-    const updatedState = { ...layout };
-    updatedState.elements[index] = value;
-    setlayout(updatedState);
+  const handleDragResize = (id: string, value: Draggable) => {
+    //const updatedState = { ...layout };
+    // updatedState.elements[index] = value;
+    // setlayout(updatedState);
+    setlayout(({ settings, elements }) => ({
+      settings,
+      elements: elements.map((element) => {
+        return element.asset.id === id ? value : element;
+      }),
+    }));
   };
 
   useEffect(() => {
