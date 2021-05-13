@@ -6,6 +6,7 @@ import LayoutSettingsPanel from '../../components/LayoutSettingsPanel';
 import LayoutElementsPanel from '../../components/LayoutElementsPanel';
 import constrainMaxWidth from './helpers/constrainMaxWidth';
 import mergeDraggableElements from './helpers/mergeDraggableElements';
+import mergeDraggableAssetWithPersistentState from './helpers/mergeDraggableAssetWithPersistentState';
 
 import {
   DialogInvocationParams,
@@ -53,19 +54,26 @@ const LayoutContainer = ({ sdk }: LayoutContainerProps) => {
     sdk.close(layout);
   };
 
-  const handleSetPublishAsset = (id: number, value: boolean) => {
-    const elements = layout.elements;
-    elements[id] = {
-      ...elements[id],
-      published: value,
-    };
+  const handleSetPublishAsset = (id: string, value: boolean) => {
+    // const elements = layout.elements;
+    // elements[id] = {
+    //   ...elements[id],
+    //   published: value,
+    // };
 
-    debugger;
+    setlayout(({ settings, elements }) => ({
+      settings,
+      elements: elements.map((element) => {
+        return element.asset.id === id
+          ? { ...element, published: value }
+          : element;
+      }),
+    }));
 
-    setlayout({
-      ...layout,
-      elements,
-    });
+    // setlayout({
+    //   ...layout,
+    //   elements,
+    // });
   };
 
   const handleDragResize = (index: number, value: Draggable) => {
@@ -90,51 +98,89 @@ const LayoutContainer = ({ sdk }: LayoutContainerProps) => {
   // can tell whether a given panel is valid.
   const layoutPanelDisabled = elementsPanelDisabled;
 
-  useEffect(() => {
-    debugger;
-    let settings = initialSettings;
+    useEffect(() => {
+      // Wrap assets in Draggable
+      const draggableAssets = assets.map((asset) => {
+        const { height, width } = asset;
+        const constrainedDimensions = constrainMaxWidth({
+          width,
+          height,
+          constraint: 600,
+        });
 
-    // If a an ID was passed in the parameters, load existing data from field
-    if (currentLayoutId) {
-      const persistedState = entryField?.[currentLayoutId];
-      if (persistedState) {
-        // const merged = mergeState(persistedState, initialState);
-        // setlayout({ settings: persistedState.settings, elements: [] });
-        settings = persistedState.settings;
-      }
-    }
-
-    // Wrap assets in Draggable
-    const persisted = assets.map((asset) => {
-      const { height, width } = asset;
-      const constrainedDimensions = constrainMaxWidth({
-        width,
-        height,
-        constraint: 600,
+        return {
+          published: false,
+          originalHeight: height,
+          originalWidth: width,
+          position: {
+            x: 0,
+            y: 0,
+          },
+          asset,
+          ...constrainedDimensions,
+        } as Draggable;
       });
 
-      return {
-        published: false,
-        originalHeight: height,
-        originalWidth: width,
-        position: {
-          x: 0,
-          y: 0,
-        },
-        asset,
-        ...constrainedDimensions,
-      } as Draggable;
-    });
+      if (currentLayoutId) {
+        const persisted = entryField?.[currentLayoutId];
+        if (persisted) {
+          const merged = mergeDraggableAssetWithPersistentState({
+            persisted: persisted.elements,
+            assetState: draggableAssets,
+          });
+          setlayout({...persisted, elements: merged})
+        }
+      } else {
+        setlayout({...layout, elements: draggableAssets})
+      }
+    }, [])
 
-    const mergedElements = mergeDraggableElements({
-      persisted,
-      localState: layout.elements,
-    });
+  // useEffect(() => {
+  //   let persistedState = {
+  //     settings: initialSettings,
+  //     elements: [],
+  //   };
+  //   // If a an ID was passed in the parameters, load existing data from field
+  //   if (currentLayoutId) {
+  //     persistedState = entryField?.[currentLayoutId];
+  //     if (persistedState) {
+  //       // const merged = mergeState(persistedState, initialState);
+  //       // setlayout({ settings: persistedState.settings, elements: [] });
+  //       // settings = persistedState.settings;
+  //     }
+  //   }
 
-    setlayout({ settings, elements: mergedElements });
+  //   // Wrap assets in Draggable
+  //   const DraggableAssets = assets.map((asset) => {
+  //     const { height, width } = asset;
+  //     const constrainedDimensions = constrainMaxWidth({
+  //       width,
+  //       height,
+  //       constraint: 600,
+  //     });
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  //     return {
+  //       published: false,
+  //       originalHeight: height,
+  //       originalWidth: width,
+  //       position: {
+  //         x: 0,
+  //         y: 0,
+  //       },
+  //       asset,
+  //       ...constrainedDimensions,
+  //     } as Draggable;
+  //   });
+
+  //   const mergedElements = mergeDraggableElements({
+  //     persisted: DraggableAssets,
+  //     localState: persistedState.elements,
+  //   });
+
+  //   setlayout({ settings: persistedState.settings, elements: mergedElements });
+
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, []);
 
   return (
     <Workbench>
@@ -188,6 +234,6 @@ const LayoutContainer = ({ sdk }: LayoutContainerProps) => {
       </Workbench.Content>
     </Workbench>
   );
-};
+};;
 
 export default LayoutContainer;

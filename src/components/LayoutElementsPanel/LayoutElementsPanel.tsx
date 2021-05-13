@@ -9,7 +9,7 @@ import { Draggable } from '../../types';
 
 type LayoutElementsPanelProps = {
   elements: Draggable[];
-  onSetPublish: (id: number, value: boolean) => void;
+  onSetPublish: (id: string, value: boolean) => void;
 };
 
 const LayoutElementsPanel = ({
@@ -38,7 +38,7 @@ const LayoutElementsPanel = ({
                 <DropdownList>
                   <DropdownListItem isTitle>Actions</DropdownListItem>
                   <DropdownListItem
-                    onClick={() => onSetPublish(index, !element.published)}
+                    onClick={() => onSetPublish(asset.id, !element.published)}
                   >
                     {element.published ? 'Unpublish' : 'Publish'}
                   </DropdownListItem>
