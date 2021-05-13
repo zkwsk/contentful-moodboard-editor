@@ -1,5 +1,9 @@
 This project was bootstrapped with [Create Contentful App](https://github.com/contentful/create-contentful-app).
 
+## User guide
+
+There is a non-technical guide for end-users available [here](docs/USER_GUIDE.md)
+
 ## Available Scripts
 
 In the project directory, you can run:
