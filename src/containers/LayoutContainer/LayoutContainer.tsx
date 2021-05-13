@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { DialogExtensionSDK } from '@contentful/app-sdk';
 import { Button, Workbench } from '@contentful/forma-36-react-components';
 import LayoutTabs from '../../components/LayoutTabs';
@@ -49,7 +49,9 @@ const LayoutContainer = ({ sdk }: LayoutContainerProps) => {
     debugger;
     const { height, width } = asset;
     const { maxHeight, maxWidth } = constrainMaxWidth({
-      height: asset.height, width: asset.width, constraint: 600
+      height: asset.height,
+      width: asset.width,
+      constraint: 600,
     });
 
     return {
@@ -78,25 +80,26 @@ const LayoutContainer = ({ sdk }: LayoutContainerProps) => {
     elements: initialAssetState,
   };
 
-
   const mergeState = (assetState: Layout, existingState?: Layout) => {
     if (!existingState) {
       // We're creating a new record
       return assetState;
     }
 
-    const assetIds = assetState.elements.map(({asset}) => asset.id);
+    const assetIds = assetState.elements.map(({ asset }) => asset.id);
 
-    // Filter existing state so only records that match ids on asset state are 
+    // Filter existing state so only records that match ids on asset state are
     // included. This is done to take account for assets being deleted.
-    const filteredExistingElements = existingState.elements.filter((({asset}) => assetIds.includes(asset.id)))
+    const filteredExistingElements = existingState.elements.filter(
+      ({ asset }) => assetIds.includes(asset.id),
+    );
 
     const existingStateIds = filteredExistingElements.map(
       ({ asset }) => asset.id,
     );
 
-    const newElements = assetState.elements.filter(({ asset }) =>
-      !existingStateIds.includes(asset.id),
+    const newElements = assetState.elements.filter(
+      ({ asset }) => !existingStateIds.includes(asset.id),
     );
 
     return {

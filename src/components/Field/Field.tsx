@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { FieldExtensionSDK } from '@contentful/app-sdk';
 import MoodboardEditorContainer from '../../containers/MoodboardEditorContainer';
 import { JsonEditor } from '@contentful/field-editor-json';
@@ -32,7 +32,7 @@ const Field = (props: FieldProps) => {
             // on the parent component which will in turn push the updated
             // state back to this component.
             setDevelopment(!development);
-            setTimeout(()   => {
+            setTimeout(() => {
               props.sdk.window.updateHeight();
             }, 100);
           }}

@@ -62,10 +62,10 @@ const LayoutSettingsPanel = ({
       return Object.values(validation).some((element) => !!element);
     };
 
-
     hasValidationErrors() && state.isValid
       ? setState({ ...state, isValid: false })
       : setState({ ...state, isValid: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [validation])
 
 
@@ -96,6 +96,7 @@ const LayoutSettingsPanel = ({
       return;
     }
     setValidation({ ...validation, title: '' });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.title, state.layoutId]);
 
   // Validate aspect ratio
@@ -111,6 +112,7 @@ const LayoutSettingsPanel = ({
         setValidation(newValidationState);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.aspectRatio])
 
 
@@ -120,6 +122,7 @@ const LayoutSettingsPanel = ({
     if (!isEqual(settings, state)) {
       setState({ ...settings });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [settings]);
 
   const persistState = () => {

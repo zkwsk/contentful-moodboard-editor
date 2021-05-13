@@ -24,47 +24,6 @@ const MoodboardEditorContainer = ({sdk}: MoodboardEditorContainerProps) => {
   const entryField = sdk.entry.fields[ENTRY_FIELD_ID];
   const assetField = sdk.entry.fields[ASSETS_FIELD_ID];
 
-  const testInitialState = {
-    'test-1': {
-      settings: {
-        layoutId: 'test-1',
-        title: 'Test 1',
-        enabled: true,
-        aspectRatio: '3:5',
-        maxWidth: 0,
-        isValid: true,
-      },
-      elements: [
-        {
-          published: true,
-          height: 480,
-          width: 640,
-          originalHeight: 480,
-          originalWidth: 640,
-          top: 20,
-          left: 45,
-          element: {
-            id: 'fjfklsfkj',
-            filename: 'bogus.jpg',
-            title: 'Test image',
-            type: 'image/jpeg',
-            width: 640,
-            height: 480,
-            element: {
-              url: 'https://fakeimg.pl/640x480',
-              alt: 'This is fake',
-              description: 'A fake image',
-            },
-          },
-        },
-      ],
-    },
-  };
-
-  // Reset state
-  // entryField.setValue(testInitialState);
-
-  // TODO: load from contentful
   const [fieldData, setFieldData] = useState<FieldData>(
     entryField.getValue() as FieldData,
   );
