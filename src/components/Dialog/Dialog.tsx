@@ -1,13 +1,13 @@
 import React from 'react';
-import { Paragraph } from '@contentful/forma-36-react-components';
 import { DialogExtensionSDK } from '@contentful/app-sdk';
+import LayoutContainer from '../../containers/LayoutContainer';
 
 interface DialogProps {
   sdk: DialogExtensionSDK;
 }
 
-const Dialog = (props: DialogProps) => {
-  return <Paragraph>Hello Dialog Component</Paragraph>;
+const Dialog = ({ sdk }: DialogProps) => {
+  return <LayoutContainer sdk={sdk} />;
 };
 
 export default Dialog;
