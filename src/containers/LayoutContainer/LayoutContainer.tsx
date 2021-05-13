@@ -32,8 +32,8 @@ const LayoutContainer = ({ sdk }: LayoutContainerProps) => {
   }) => {
     if (width < constraint) {
       return {
-        height,
-        width,
+        maxHeight: height,
+        maxWidth: width,
       };
     }
 
@@ -49,8 +49,8 @@ const LayoutContainer = ({ sdk }: LayoutContainerProps) => {
     debugger;
     const { height, width } = asset;
     const { maxHeight, maxWidth } = constrainMaxWidth({
-      height: asset.height,
-      width: asset.width,
+      height,
+      width,
       constraint: 600,
     });
 
