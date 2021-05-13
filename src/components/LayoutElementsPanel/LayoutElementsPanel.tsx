@@ -28,7 +28,7 @@ const LayoutElementsPanel = ({
 
           return (
             <EntityListItem
-              key={asset.filename}
+              key={asset.id}
               title={asset.title}
               description={`Filename: ${asset.filename}`}
               withThumbnail={asset.type === 'image/jpeg'}

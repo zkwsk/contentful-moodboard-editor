@@ -27,6 +27,7 @@ const LayoutCanvas = ({ layout, onDragResize }: LayoutCanvasProps) => {
     settings?.snap?.y ? settings.snap.y : 1,
   ] as [number, number];
 
+
   return (
     <div
       style={{
@@ -50,7 +51,8 @@ const LayoutCanvas = ({ layout, onDragResize }: LayoutCanvasProps) => {
             bounds={bounds}
             defaultPosition={{ x, y }}
             cancel={'.react-resizable-handle'}
-            onDrag={(e, { x, y }) => {
+            onStop={(e, { x, y }) => {
+              console.log('onDrag');
               onDragResize(index, {
                 ...element,
                 position: { x, y },
@@ -62,7 +64,7 @@ const LayoutCanvas = ({ layout, onDragResize }: LayoutCanvasProps) => {
               width={width}
               lockAspectRatio={true}
               resizeHandles={['se']}
-              onResize={(event, data) => {
+              onResizeStop={(event, data) => {
                 onDragResize(index, {
                   ...element,
                   height: data.size.height,

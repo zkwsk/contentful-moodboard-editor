@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { DialogExtensionSDK } from '@contentful/app-sdk';
 import { Button, Workbench } from '@contentful/forma-36-react-components';
 import LayoutTabs from '../../components/LayoutTabs';
 import LayoutSettingsPanel from '../../components/LayoutSettingsPanel';
 import LayoutElementsPanel from '../../components/LayoutElementsPanel';
 import constrainMaxWidth from './helpers/constrainMaxWidth';
-
+import mergeState from './helpers/mergeState';
 
 import {
   DialogInvocationParams,
@@ -23,10 +23,7 @@ const LayoutContainer = ({ sdk }: LayoutContainerProps) => {
   const params = sdk.parameters?.invocation as DialogInvocationParams;
   const { currentLayoutId, layoutIds, entryField, assets } = params;
 
-
-
   const initialAssetState = assets.map((asset) => {
-    debugger;
     const { height, width } = asset;
     const { maxHeight, maxWidth } = constrainMaxWidth({
       height,
@@ -60,39 +57,9 @@ const LayoutContainer = ({ sdk }: LayoutContainerProps) => {
     elements: initialAssetState,
   };
 
-  const mergeState = (assetState: Layout, existingState?: Layout) => {
-    if (!existingState) {
-      // We're creating a new record
-      return assetState;
-    }
-
-    const assetIds = assetState.elements.map(({ asset }) => asset.id);
-
-    // Filter existing state so only records that match ids on asset state are
-    // included. This is done to take account for assets being deleted.
-    const filteredExistingElements = existingState.elements.filter(
-      ({ asset }) => assetIds.includes(asset.id),
-    );
-
-    const existingStateIds = filteredExistingElements.map(
-      ({ asset }) => asset.id,
-    );
-
-    const newElements = assetState.elements.filter(
-      ({ asset }) => !existingStateIds.includes(asset.id),
-    );
-
-    return {
-      ...existingState,
-      elements: [...filteredExistingElements, ...newElements],
-    } as Layout;
-  };
-
-  const existingState =
-    (currentLayoutId && entryField?.[currentLayoutId]) || undefined;
-
   const [layout, setlayout] = useState<Layout>(
-    mergeState(initialState, existingState),
+    initialState,
+    // mergeState(persistedState, initialState),
   );
 
   const { settings } = layout;
@@ -124,9 +91,10 @@ const LayoutContainer = ({ sdk }: LayoutContainerProps) => {
     setlayout(updatedState);
   };
 
-  // useEffect(() => {
-  //   console.log({ layout });
-  // }, [layout]);
+  useEffect(() => {
+    console.log({ layout });
+    console.log({ assets });
+  }, [assets, layout]);
 
   const elementsPanelDisabled = !(
     settings.isValid &&
@@ -138,6 +106,19 @@ const LayoutContainer = ({ sdk }: LayoutContainerProps) => {
   // enabled on elements panel. Probably need to split valid into an object that
   // can tell whether a given panel is valid.
   const layoutPanelDisabled = elementsPanelDisabled;
+
+  useEffect(() => {
+    debugger;
+    // If a an ID was passed in the parameters, load existing data from field
+    if (currentLayoutId) {
+      const persistedState = entryField?.[currentLayoutId];
+      if (persistedState) {
+        // const merged = mergeState(persistedState, initialState);
+        setlayout(persistedState);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <Workbench>
