@@ -29,7 +29,11 @@ const LayoutContainer = ({ sdk }: LayoutContainerProps) => {
     enabled: true,
     aspectRatio: '5:4',
     maxWidth: 0,
-    isValid: false,
+    isValid: {
+      settings: false,
+      elements: false,
+      canvas: false,
+    },
   } as LayoutSettings;
 
   const initialState: Layout = {
@@ -37,9 +41,7 @@ const LayoutContainer = ({ sdk }: LayoutContainerProps) => {
     elements: [],
   };
 
-  const [layout, setlayout] = useState<Layout>(
-    initialState,
-  );
+  const [layout, setlayout] = useState<Layout>(initialState);
 
   const { settings } = layout;
 
@@ -76,61 +78,72 @@ const LayoutContainer = ({ sdk }: LayoutContainerProps) => {
   //   console.log({ assets });
   // }, [assets, layout]);
 
-  const elementsPanelDisabled = !(
-    settings.isValid &&
-    assets.length > 0 &&
-    settings.enabled
-  );
+  useEffect(() => {
+    const publishedElements = layout.elements.filter(
+      ({ published }) => { return published; }
+    );
 
-  // TODO: Make layout panel listen for whether any elements are
-  // enabled on elements panel. Probably need to split valid into an object that
-  // can tell whether a given panel is valid.
-  const layoutPanelDisabled = elementsPanelDisabled;
-
-    useEffect(() => {
-      // Wrap assets in Draggable
-      const draggableAssets = assets.map((asset) => {
-        const { height, width } = asset;
-        const constrainedDimensions = constrainMaxWidth({
-          width,
-          height,
-          constraint: 600,
-        });
-
-        return {
-          published: false,
-          originalHeight: height,
-          originalWidth: width,
-          position: {
-            x: 0,
-            y: 0,
+    publishedElements.length > 0
+      ? setlayout({
+          ...layout,
+          settings: {
+            ...layout.settings,
+            isValid: { ...layout.settings.isValid, elements: true },
           },
-          asset,
-          ...constrainedDimensions,
-        } as Draggable;
+        })
+      : setlayout({
+          ...layout,
+          settings: {
+            ...layout.settings,
+            isValid: { ...layout.settings.isValid, elements: false },
+          },
+        });
+  }, [layout.elements]);
+
+  useEffect(() => {
+    // Wrap assets in Draggable
+    const draggableAssets = assets.map((asset) => {
+      const { height, width } = asset;
+      const constrainedDimensions = constrainMaxWidth({
+        width,
+        height,
+        constraint: 600,
       });
 
-      if (currentLayoutId) {
-        const persisted = entryField?.[currentLayoutId];
-        if (persisted) {
-          const merged = mergeDraggableAssetWithPersistentState({
-            persisted: persisted.elements,
-            assetState: draggableAssets,
-          });
-          setlayout({ ...persisted, elements: merged });
-        }
-      } else {
-        setlayout({ ...layout, elements: draggableAssets });
+      return {
+        published: false,
+        originalHeight: height,
+        originalWidth: width,
+        position: {
+          x: 0,
+          y: 0,
+        },
+        asset,
+        ...constrainedDimensions,
+      } as Draggable;
+    });
+
+    if (currentLayoutId) {
+      const persisted = entryField?.[currentLayoutId];
+      if (persisted) {
+        const merged = mergeDraggableAssetWithPersistentState({
+          persisted: persisted.elements,
+          assetState: draggableAssets,
+        });
+        setlayout({ ...persisted, elements: merged });
       }
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
+    } else {
+      setlayout({ ...layout, elements: draggableAssets });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <Workbench>
       <Workbench.Header
         title="Create Layout"
         actions={
-          <Button disabled={!settings.isValid} onClick={handleSave}>
+          <Button disabled={!settings.isValid.elements} onClick={handleSave}>
             Save
           </Button>
         }
@@ -156,7 +169,7 @@ const LayoutContainer = ({ sdk }: LayoutContainerProps) => {
             {
               id: 'elements',
               label: 'Elements',
-              disabled: elementsPanelDisabled,
+              disabled: !settings.isValid.settings,
               panel: (
                 <LayoutElementsPanel
                   elements={layout.elements}
@@ -167,7 +180,7 @@ const LayoutContainer = ({ sdk }: LayoutContainerProps) => {
             {
               id: 'layout',
               label: 'Layout',
-              disabled: layoutPanelDisabled,
+              disabled: !settings.isValid.elements,
               panel: (
                 <LayoutCanvas layout={layout} onDragResize={handleDragResize} />
               ),
