@@ -79,9 +79,9 @@ const LayoutContainer = ({ sdk }: LayoutContainerProps) => {
   // }, [assets, layout]);
 
   useEffect(() => {
-    const publishedElements = layout.elements.filter(
-      ({ published }) => { return published; }
-    );
+    const publishedElements = layout.elements.filter(({ published }) => {
+      return published;
+    });
 
     publishedElements.length > 0
       ? setlayout({
@@ -98,6 +98,7 @@ const LayoutContainer = ({ sdk }: LayoutContainerProps) => {
             isValid: { ...layout.settings.isValid, elements: false },
           },
         });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [layout.elements]);
 
   useEffect(() => {
