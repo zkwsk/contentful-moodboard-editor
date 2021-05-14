@@ -15,7 +15,11 @@ export type LayoutSettings = {
   enabled: boolean;
   aspectRatio: string;
   maxWidth: number;
-  isValid: boolean;
+  isValid: {
+    settings: boolean;
+    elements: boolean;
+    canvas: boolean;
+  };
   snap?: {
     x?: number;
     y?: number;

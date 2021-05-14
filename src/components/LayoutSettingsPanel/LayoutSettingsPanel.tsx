@@ -62,9 +62,9 @@ const LayoutSettingsPanel = ({
       return Object.values(validation).some((element) => !!element);
     };
 
-    hasValidationErrors() && state.isValid
-      ? setState({ ...state, isValid: false })
-      : setState({ ...state, isValid: true });
+    hasValidationErrors() && state.isValid.settings
+      ? setState({ ...state, isValid: { ...state.isValid, settings: false } })
+      : setState({ ...state, isValid: { ...state.isValid, settings: true } });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [validation])
 
