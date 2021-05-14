@@ -1,7 +1,7 @@
 import React from 'react';
 import EntryEditor from './EntryEditor';
 import { render } from '@testing-library/react';
-import { mockSdk } from '../../test/mocks/mockSdk';
+import { mockSdk } from '../../../test/mocks/mockSdk';
 
 describe('Entry component', () => {
   it('Component text exists', () => {

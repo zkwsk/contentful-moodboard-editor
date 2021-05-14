@@ -71,7 +71,6 @@ const LayoutSettingsPanel = ({
 
   // Validate title and layoutId
   useEffect(() => {
-    debugger;
     if (!state.title) {
       setValidation({
         ...validation,

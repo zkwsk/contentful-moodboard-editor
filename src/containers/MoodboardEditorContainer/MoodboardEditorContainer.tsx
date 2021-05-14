@@ -7,16 +7,11 @@ import {
 } from '@contentful/app-sdk';
 
 import { ENTRY_FIELD_ID, ASSETS_FIELD_ID } from '../../constants';
-
-import { Asset } from '../../types';
-
 import objectIsEmpty from "../../utilities/objectIsEmpty";
-
-import { FieldData, Layout } from "../../types";
+import { Asset, FieldData, Layout } from '../../types';
 interface MoodboardEditorContainerProps {
   sdk: FieldExtensionSDK;
 }
-
 
 const MoodboardEditorContainer = ({sdk}: MoodboardEditorContainerProps) => {
   const [assets, setAssets] = useState<Asset[]>([]);
@@ -133,7 +128,6 @@ const MoodboardEditorContainer = ({sdk}: MoodboardEditorContainerProps) => {
             };
           },
         );
-        console.log({ parsedImages });
         setAssets(parsedImages);
       });
     });

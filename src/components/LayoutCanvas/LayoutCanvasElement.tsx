@@ -5,8 +5,6 @@ export const LayoutCanvasElement = ({ element }: { element: Draggable }) => {
   const { asset } = element;
   const { type } = asset;
 
-  debugger;
-
   const Image = (
     <div
       style={{

@@ -8,7 +8,7 @@ import { LayoutCanvasElement } from './LayoutCanvasElement';
 
 type LayoutCanvasProps = {
   layout: Layout;
-  onDragResize: (index: number, value: DraggableType) => void;
+  onDragResize: (id: string, value: DraggableType) => void;
 };
 
 const LayoutCanvas = ({ layout, onDragResize }: LayoutCanvasProps) => {
@@ -26,6 +26,7 @@ const LayoutCanvas = ({ layout, onDragResize }: LayoutCanvasProps) => {
     settings?.snap?.x ? settings.snap.x : 1,
     settings?.snap?.y ? settings.snap.y : 1,
   ] as [number, number];
+
 
   return (
     <div
@@ -50,8 +51,8 @@ const LayoutCanvas = ({ layout, onDragResize }: LayoutCanvasProps) => {
             bounds={bounds}
             defaultPosition={{ x, y }}
             cancel={'.react-resizable-handle'}
-            onDrag={(e, { x, y }) => {
-              onDragResize(index, {
+            onStop={(e, { x, y }) => {
+              onDragResize(asset.id, {
                 ...element,
                 position: { x, y },
               });
@@ -62,8 +63,8 @@ const LayoutCanvas = ({ layout, onDragResize }: LayoutCanvasProps) => {
               width={width}
               lockAspectRatio={true}
               resizeHandles={['se']}
-              onResize={(event, data) => {
-                onDragResize(index, {
+              onResizeStop={(event, data) => {
+                onDragResize(asset.id, {
                   ...element,
                   height: data.size.height,
                   width: data.size.width,
