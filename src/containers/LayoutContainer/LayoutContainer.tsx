@@ -5,7 +5,6 @@ import LayoutTabs from '../../components/LayoutTabs';
 import LayoutSettingsPanel from '../../components/LayoutSettingsPanel';
 import LayoutElementsPanel from '../../components/LayoutElementsPanel';
 import constrainMaxWidth from './helpers/constrainMaxWidth';
-import mergeDraggableElements from './helpers/mergeDraggableElements';
 import mergeDraggableAssetWithPersistentState from './helpers/mergeDraggableAssetWithPersistentState';
 
 import {
@@ -36,12 +35,10 @@ const LayoutContainer = ({ sdk }: LayoutContainerProps) => {
   const initialState: Layout = {
     settings: initialSettings,
     elements: [],
-    // elements: initialAssetState,
   };
 
   const [layout, setlayout] = useState<Layout>(
     initialState,
-    // mergeState(persistedState, initialState),
   );
 
   const { settings } = layout;
@@ -55,12 +52,6 @@ const LayoutContainer = ({ sdk }: LayoutContainerProps) => {
   };
 
   const handleSetPublishAsset = (id: string, value: boolean) => {
-    // const elements = layout.elements;
-    // elements[id] = {
-    //   ...elements[id],
-    //   published: value,
-    // };
-
     setlayout(({ settings, elements }) => ({
       settings,
       elements: elements.map((element) => {
@@ -69,17 +60,9 @@ const LayoutContainer = ({ sdk }: LayoutContainerProps) => {
           : element;
       }),
     }));
-
-    // setlayout({
-    //   ...layout,
-    //   elements,
-    // });
   };
 
   const handleDragResize = (id: string, value: Draggable) => {
-    //const updatedState = { ...layout };
-    // updatedState.elements[index] = value;
-    // setlayout(updatedState);
     setlayout(({ settings, elements }) => ({
       settings,
       elements: elements.map((element) => {
@@ -88,10 +71,10 @@ const LayoutContainer = ({ sdk }: LayoutContainerProps) => {
     }));
   };
 
-  useEffect(() => {
-    console.log({ layout });
-    console.log({ assets });
-  }, [assets, layout]);
+  // useEffect(() => {
+  //   console.log({ layout });
+  //   console.log({ assets });
+  // }, [assets, layout]);
 
   const elementsPanelDisabled = !(
     settings.isValid &&
@@ -134,59 +117,13 @@ const LayoutContainer = ({ sdk }: LayoutContainerProps) => {
             persisted: persisted.elements,
             assetState: draggableAssets,
           });
-          setlayout({...persisted, elements: merged})
+          setlayout({ ...persisted, elements: merged });
         }
       } else {
-        setlayout({...layout, elements: draggableAssets})
+        setlayout({ ...layout, elements: draggableAssets });
       }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
-
-  // useEffect(() => {
-  //   let persistedState = {
-  //     settings: initialSettings,
-  //     elements: [],
-  //   };
-  //   // If a an ID was passed in the parameters, load existing data from field
-  //   if (currentLayoutId) {
-  //     persistedState = entryField?.[currentLayoutId];
-  //     if (persistedState) {
-  //       // const merged = mergeState(persistedState, initialState);
-  //       // setlayout({ settings: persistedState.settings, elements: [] });
-  //       // settings = persistedState.settings;
-  //     }
-  //   }
-
-  //   // Wrap assets in Draggable
-  //   const DraggableAssets = assets.map((asset) => {
-  //     const { height, width } = asset;
-  //     const constrainedDimensions = constrainMaxWidth({
-  //       width,
-  //       height,
-  //       constraint: 600,
-  //     });
-
-  //     return {
-  //       published: false,
-  //       originalHeight: height,
-  //       originalWidth: width,
-  //       position: {
-  //         x: 0,
-  //         y: 0,
-  //       },
-  //       asset,
-  //       ...constrainedDimensions,
-  //     } as Draggable;
-  //   });
-
-  //   const mergedElements = mergeDraggableElements({
-  //     persisted: DraggableAssets,
-  //     localState: persistedState.elements,
-  //   });
-
-  //   setlayout({ settings: persistedState.settings, elements: mergedElements });
-
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, []);
 
   return (
     <Workbench>
