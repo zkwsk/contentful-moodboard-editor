@@ -19,15 +19,27 @@ const MoodboardEditorContainer = ({sdk}: MoodboardEditorContainerProps) => {
   const entryField = sdk.entry.fields[ENTRY_FIELD_ID];
   const assetField = sdk.entry.fields[ASSETS_FIELD_ID];
 
-  const [fieldData, setFieldData] = useState<FieldData>(
-    entryField.getValue() as FieldData,
-  );
+  const fieldIsValid = (field: FieldData | unknown): field is FieldData => {
+    return (field as FieldData).settings !== undefined;
+  };
+
+  const getEntryFieldValue = () => {
+    const value = entryField.getValue();
+
+    if (value && fieldIsValid(value)) {
+      return value;
+    } else {
+      return {};
+    }
+  };
+
+  const [fieldData, setFieldData] = useState<FieldData>(getEntryFieldValue());
 
   // If you only want to extend Contentful's default editing experience
   // reuse Contentful's editor components
   // -> https://www.contentful.com/developers/docs/extensibility/field-editors/
 
-  const layoutIds = entryField ? Object.keys(entryField.getValue()) : [];
+  const layoutIds = entryField ? Object.keys(getEntryFieldValue()) : [];
 
   const openDialog = async (options: unknown) => {
     // @ts-ignore
