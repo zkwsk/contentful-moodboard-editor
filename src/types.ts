@@ -1,8 +1,8 @@
 export type FieldData =
-  | {
-      [key: string]: Layout;
-    }
-  | undefined;
+  {
+    [key: string]: Layout;
+  }
+;
 
 export type Layout = {
   settings: LayoutSettings;

@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
 import { FieldExtensionSDK } from '@contentful/app-sdk';
-import MoodboardEditorContainer from '../../containers/MoodboardEditorContainer';
 import { JsonEditor } from '@contentful/field-editor-json';
 import { CheckboxField } from '@contentful/forma-36-react-components';
-
 import '@contentful/forma-36-react-components/dist/styles.css';
 
+import MoodboardEditorContainer from '../../containers/MoodboardEditorContainer';
 interface FieldProps {
   sdk: FieldExtensionSDK;
 }
