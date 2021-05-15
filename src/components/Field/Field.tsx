@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { FieldExtensionSDK } from '@contentful/app-sdk';
-import { JsonEditor } from '@contentful/field-editor-json';
 import { CheckboxField } from '@contentful/forma-36-react-components';
+import 'codemirror/lib/codemirror.css';
 import '@contentful/forma-36-react-components/dist/styles.css';
+import { JsonEditor } from '@contentful/field-editor-json';
 
 import MoodboardEditorContainer from '../../containers/MoodboardEditorContainer';
 interface FieldProps {
