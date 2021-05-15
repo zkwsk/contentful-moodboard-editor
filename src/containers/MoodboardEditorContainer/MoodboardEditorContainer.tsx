@@ -20,7 +20,8 @@ const MoodboardEditorContainer = ({sdk}: MoodboardEditorContainerProps) => {
   const assetField = sdk.entry.fields[ASSETS_FIELD_ID];
 
   const fieldIsValid = (field: FieldData | unknown): field is FieldData => {
-    return (field as FieldData).settings !== undefined;
+    const layoutId = Object.keys(field as FieldData)[0];
+    return (field as FieldData)[layoutId].settings !== undefined;
   };
 
   const getEntryFieldValue = () => {
