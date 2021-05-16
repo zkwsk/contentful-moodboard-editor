@@ -31,6 +31,7 @@ const LayoutCanvas = ({ layout, onDragResize }: LayoutCanvasProps) => {
   return (
     <div
       style={{
+        position: 'relative',
         border: '1px dotted black',
         width: settings.maxWidth,
         height: (aspectY / aspectX) * settings.maxWidth + 'px',
