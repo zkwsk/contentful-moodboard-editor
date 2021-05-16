@@ -13,3 +13,7 @@ div {
   margin: 0;
   max-width: none;
 }
+
+.react-draggable, .react-draggable.react-resizable {
+  position: absolute;
+}
