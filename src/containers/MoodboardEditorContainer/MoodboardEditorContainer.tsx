@@ -21,7 +21,7 @@ const MoodboardEditorContainer = ({sdk}: MoodboardEditorContainerProps) => {
 
   const fieldIsValid = (field: FieldData | unknown): field is FieldData => {
     const layoutId = Object.keys(field as FieldData)[0];
-    return (field as FieldData)[layoutId].settings !== undefined;
+    return (field as FieldData)[layoutId]?.settings !== undefined;
   };
 
   const getEntryFieldValue = () => {
@@ -30,6 +30,7 @@ const MoodboardEditorContainer = ({sdk}: MoodboardEditorContainerProps) => {
     if (value && fieldIsValid(value)) {
       return value;
     } else {
+      entryField.setValue({});
       return {};
     }
   };
@@ -158,7 +159,9 @@ const MoodboardEditorContainer = ({sdk}: MoodboardEditorContainerProps) => {
 
   useEffect(() => {
     const detach = entryField.onValueChanged(() => {
-      sdk.window.updateHeight();
+      setTimeout(()  => {
+        sdk.window.updateHeight();
+      }, 100);
     });
     return () => detach();
   }, [entryField, sdk]);
