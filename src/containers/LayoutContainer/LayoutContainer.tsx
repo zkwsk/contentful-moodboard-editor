@@ -64,6 +64,29 @@ const LayoutContainer = ({ sdk }: LayoutContainerProps) => {
     }));
   };
 
+  const handleCenterElement = (id: string) => {
+    const currentElement = layout.elements.find(
+      (element) => element.asset.id === id,
+    );
+    if (!currentElement) {
+      return;
+    }
+    const centeredX = layout.settings.maxWidth / 2 - currentElement.width / 2;
+
+    setlayout((prevState) => {
+      const { elements } = prevState;
+
+      return {
+        ...prevState,
+        elements: elements.map((element) => {
+          return element.asset.id === id
+            ? { ...element, position: { ...element.position, x: centeredX } }
+            : element;
+        }),
+      } as Layout;
+    });
+  };
+
   const handleDragResize = (id: string, value: Draggable) => {
     setlayout(({ settings, elements }) => ({
       settings,
@@ -175,6 +198,7 @@ const LayoutContainer = ({ sdk }: LayoutContainerProps) => {
                 <LayoutElementsPanel
                   elements={layout.elements}
                   onSetPublish={handleSetPublishAsset}
+                  onCenterElement={handleCenterElement}
                 />
               ),
             },

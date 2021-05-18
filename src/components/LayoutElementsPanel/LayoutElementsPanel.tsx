@@ -10,11 +10,13 @@ import { Draggable } from '../../types';
 type LayoutElementsPanelProps = {
   elements: Draggable[];
   onSetPublish: (id: string, value: boolean) => void;
+  onCenterElement: (id: string) => void;
 };
 
 const LayoutElementsPanel = ({
   elements,
   onSetPublish,
+  onCenterElement,
 }: LayoutElementsPanelProps) => {
   const assetList = elements.filter((element) => element.asset);
 
@@ -41,6 +43,9 @@ const LayoutElementsPanel = ({
                     onClick={() => onSetPublish(asset.id, !element.published)}
                   >
                     {element.published ? 'Unpublish' : 'Publish'}
+                  </DropdownListItem>
+                  <DropdownListItem onClick={() => onCenterElement(asset.id)}>
+                    Center element
                   </DropdownListItem>
                 </DropdownList>
               }
