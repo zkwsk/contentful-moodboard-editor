@@ -249,6 +249,41 @@ const LayoutSettingsPanel = ({
             onBlur={persistState}
             helpText="The number of pixels resizing and dragging should snap to on the y axis."
           />
+          <CheckboxField
+            name="enable-guides"
+            id="enable-guides"
+            labelText="Enable guides"
+            helpText="Allows you to enable a set of visual guides."
+            checked={state.guides?.enabled || false}
+            onChange={(event) => {
+              onUpdate({
+                ...state,
+                guides: {
+                  ...state.guides,
+                  enabled: event.currentTarget.checked,
+                },
+              });
+            }}
+          />
+          <TextField
+            name="guideCount"
+            id="guideCount"
+            labelText="Guide count"
+            value={
+              state.guides?.guideCount ? str(state.guides?.guideCount) : ''
+            }
+            onChange={(event) => {
+              setState({
+                ...state,
+                guides: {
+                  ...state.guides,
+                  guideCount: parseInt(event.currentTarget.value, 10),
+                },
+              });
+            }}
+            onBlur={persistState}
+            helpText="This will equally distribute a number of vertical guides to aid layout."
+          />
         </FieldGroup>
       </Form>
     </div>

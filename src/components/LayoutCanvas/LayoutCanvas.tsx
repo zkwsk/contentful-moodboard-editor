@@ -15,18 +15,41 @@ const LayoutCanvas = ({ layout, onDragResize }: LayoutCanvasProps) => {
   const { elements, settings } = layout;
   const publishedElements = elements.filter(({ published }) => published);
 
-  const [aspectX, aspectY] = settings.aspectRatio.split(':').map(element => parseInt(element, 10)) as [number, number];
+  const [aspectX, aspectY] = settings.aspectRatio
+    .split(':')
+    .map((element) => parseInt(element, 10)) as [number, number];
 
   // TODO: Disabled. Currently bounds are offset by the previous elements height
   const bounds = false && {
     top: 0,
-    left: 0
-  }
+    left: 0,
+  };
   const grid = [
     settings?.snap?.x ? settings.snap.x : 1,
     settings?.snap?.y ? settings.snap.y : 1,
   ] as [number, number];
 
+  const canvasHeight = (aspectY / aspectX) * settings.maxWidth + 'px';
+
+  const guideDefinition: number[] = [];
+
+  if (settings.guides?.guideCount) {
+    for (let i = 1; i < settings.guides.guideCount; i++) {
+      guideDefinition.push((1 / settings.guides.guideCount) * i * 100);
+    }
+  }
+
+  const guide = ({ height, offset }: { height: string; offset: number }) => (
+    <div
+      className="layout-guide"
+      style={{
+        position: 'absolute',
+        height,
+        borderLeft: 'black 1px dotted',
+        left: offset + '%',
+      }}
+    ></div>
+  );
 
   return (
     <div
@@ -34,7 +57,7 @@ const LayoutCanvas = ({ layout, onDragResize }: LayoutCanvasProps) => {
         position: 'relative',
         border: '1px dotted black',
         width: settings.maxWidth,
-        height: (aspectY / aspectX) * settings.maxWidth + 'px',
+        height: canvasHeight,
         marginTop: 'var(--spacing-m)',
       }}
     >
@@ -46,35 +69,45 @@ const LayoutCanvas = ({ layout, onDragResize }: LayoutCanvasProps) => {
           asset,
         } = element;
         return (
-          <Draggable
-            key={asset.id}
-            grid={grid}
-            bounds={bounds}
-            defaultPosition={{ x, y }}
-            cancel={'.react-resizable-handle'}
-            onStop={(e, { x, y }) => {
-              onDragResize(asset.id, {
-                ...element,
-                position: { x, y },
-              });
-            }}
-          >
-            <ResizableBox
-              height={height}
-              width={width}
-              lockAspectRatio={true}
-              resizeHandles={['se']}
-              onResizeStop={(event, data) => {
+          <>
+            {settings.guides?.enabled && (
+              <div className="layout-guides">
+                {guideDefinition.map((offset) =>
+                  guide({ height: canvasHeight, offset }),
+                )}
+              </div>
+            )}
+
+            <Draggable
+              key={asset.id}
+              grid={grid}
+              bounds={bounds}
+              defaultPosition={{ x, y }}
+              cancel={'.react-resizable-handle'}
+              onStop={(e, { x, y }) => {
                 onDragResize(asset.id, {
                   ...element,
-                  height: data.size.height,
-                  width: data.size.width,
+                  position: { x, y },
                 });
               }}
             >
-              <LayoutCanvasElement element={element} />
-            </ResizableBox>
-          </Draggable>
+              <ResizableBox
+                height={height}
+                width={width}
+                lockAspectRatio={true}
+                resizeHandles={['se']}
+                onResizeStop={(event, data) => {
+                  onDragResize(asset.id, {
+                    ...element,
+                    height: data.size.height,
+                    width: data.size.width,
+                  });
+                }}
+              >
+                <LayoutCanvasElement element={element} />
+              </ResizableBox>
+            </Draggable>
+          </>
         );
       })}
     </div>
