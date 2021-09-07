@@ -24,6 +24,10 @@ export type LayoutSettings = {
     x?: number;
     y?: number;
   };
+  guides: {
+    enabled: boolean;
+    guideCount: number;
+  };
 };
 
 export type Draggable = {

@@ -38,6 +38,10 @@ const LayoutContainer = ({ sdk }: LayoutContainerProps) => {
       x: 20,
       y: 20,
     },
+    guides: {
+      enabled: true,
+      guideCount: 12,
+    },
   } as LayoutSettings;
 
   const initialState: Layout = {
