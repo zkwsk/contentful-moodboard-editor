@@ -81,7 +81,7 @@ const LayoutCanvas = ({ layout, onDragResize }: LayoutCanvasProps) => {
             <Draggable
               key={asset.id}
               grid={grid}
-              bounds={bounds}
+              bounds={'parent'}
               defaultPosition={{ x, y }}
               cancel={'.react-resizable-handle'}
               onStop={(e, { x, y }) => {
@@ -92,6 +92,7 @@ const LayoutCanvas = ({ layout, onDragResize }: LayoutCanvasProps) => {
               }}
             >
               <ResizableBox
+                className="resizable-box-width-border"
                 height={height}
                 width={width}
                 lockAspectRatio={true}

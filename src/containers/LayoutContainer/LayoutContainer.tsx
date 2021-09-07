@@ -14,6 +14,7 @@ import {
   LayoutSettings,
 } from '../../types';
 import LayoutCanvas from '../../components/LayoutCanvas';
+import quantize from '../../utilities/quantize';
 
 type LayoutContainerProps = {
   sdk: DialogExtensionSDK;
@@ -96,10 +97,27 @@ const LayoutContainer = ({ sdk }: LayoutContainerProps) => {
   };
 
   const handleDragResize = (id: string, value: Draggable) => {
+    if (!settings?.snap?.x) {
+      setlayout(({ settings, elements }) => ({
+        settings,
+        elements: elements.map((element) => {
+          return element.asset.id === id ? value : element;
+        }),
+      }));
+    }
+
+    // Quantization enabled
+    const ratio = value.height / value.width;
     setlayout(({ settings, elements }) => ({
       settings,
       elements: elements.map((element) => {
-        return element.asset.id === id ? value : element;
+        return element.asset.id === id
+          ? {
+              ...value,
+              width: quantize(value.width, settings?.snap?.x || 0),
+              height: value.width * ratio,
+            }
+          : element;
       }),
     }));
   };

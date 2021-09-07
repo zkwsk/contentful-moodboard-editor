@@ -17,3 +17,7 @@ div {
 .react-draggable, .react-draggable.react-resizable {
   position: absolute;
 }
+
+.resizable-box-width-border {
+  border: 1px dotted rgba(0, 0, 0, 0.5);
+}
