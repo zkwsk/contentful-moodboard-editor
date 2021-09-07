@@ -50,7 +50,7 @@ export type Asset = {
   id: string;
   filename: string;
   title: string;
-  type: 'image/jpeg' | 'image/png' | 'video/mp4';
+  type: 'image/jpeg' | 'image/png' | 'video/mp4' | 'image/svg+xml';
   width: number;
   height: number;
   element: Image | Video;
