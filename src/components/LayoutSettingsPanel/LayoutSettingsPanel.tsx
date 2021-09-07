@@ -9,8 +9,7 @@ import {
 import isEqual from "lodash-es/isEqual";
 
 import { usePrevious } from "../../utilities/usePrevious";
-import s from '../../utilities/stringify';
-
+import str from '../../utilities/stringify';
 
 import { LayoutSettings } from '../../types';
 
@@ -25,17 +24,17 @@ const LayoutSettingsPanel = ({
   layoutIds,
   onUpdate,
 }: LayoutSettingsPanelProps) => {
-  const [ validation, setValidation ] = useState({
+  const [validation, setValidation] = useState({
     title: '',
-    aspectRatio: ''
-  })
+    aspectRatio: '',
+  });
   const [state, setState] = useState(settings);
   const prevValidation = usePrevious(validation);
 
   const isTitleValid = (input: string) => {
     const titleRegex = /^[\w ]*[^\W_][\w ]*$/gm;
-    return titleRegex.test(input)
-  }
+    return titleRegex.test(input);
+  };
 
   const isIdDuplicated = (id: string) => {
     return layoutIds.includes(id) && id !== settings.layoutId;
@@ -43,14 +42,12 @@ const LayoutSettingsPanel = ({
 
   const generateId = (input: string) => {
     return paramCase(input.trim());
-  }
+  };
 
   const isAspectValid = (input: string) => {
     const regex = /^\d*:\d*$/i;
     return regex.test(input);
-  }
-
-
+  };
 
   // Check if component is valid
   useEffect(() => {
@@ -66,8 +63,7 @@ const LayoutSettingsPanel = ({
       ? setState({ ...state, isValid: { ...state.isValid, settings: false } })
       : setState({ ...state, isValid: { ...state.isValid, settings: true } });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [validation])
-
+  }, [validation]);
 
   // Validate title and layoutId
   useEffect(() => {
@@ -112,9 +108,7 @@ const LayoutSettingsPanel = ({
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state.aspectRatio])
-
-
+  }, [state.aspectRatio]);
 
   // Populate settings from parent to internal state
   useEffect(() => {
@@ -209,7 +203,7 @@ const LayoutSettingsPanel = ({
             id="maxWidth"
             labelText="Max width"
             // textInputProps={{ placeholder: '880px' }}
-            value={s(state.maxWidth)}
+            value={str(state.maxWidth)}
             onChange={(event) => {
               setState({
                 ...state,
@@ -224,7 +218,7 @@ const LayoutSettingsPanel = ({
             id="snapX"
             labelText="Snap value X-axis"
             // textInputProps={{ placeholder: '880px' }}
-            value={state.snap?.x ? s(state.snap.x) : ''}
+            value={state.snap?.x ? str(state.snap.x) : ''}
             onChange={(event) => {
               setState({
                 ...state,
@@ -242,7 +236,7 @@ const LayoutSettingsPanel = ({
             id="snapY"
             labelText="Snap value Y-axis"
             // textInputProps={{ placeholder: '880px' }}
-            value={state.snap?.y ? s(state.snap.y) : ''}
+            value={state.snap?.y ? str(state.snap.y) : ''}
             onChange={(event) => {
               setState({
                 ...state,

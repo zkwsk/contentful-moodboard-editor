@@ -34,6 +34,10 @@ const LayoutContainer = ({ sdk }: LayoutContainerProps) => {
       elements: false,
       canvas: false,
     },
+    snap: {
+      x: 20,
+      y: 20,
+    },
   } as LayoutSettings;
 
   const initialState: Layout = {
@@ -215,6 +219,6 @@ const LayoutContainer = ({ sdk }: LayoutContainerProps) => {
       </Workbench.Content>
     </Workbench>
   );
-};;
+};
 
 export default LayoutContainer;
