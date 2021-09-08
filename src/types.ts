@@ -36,12 +36,14 @@ export type Draggable = {
   width: number;
   originalHeight: number;
   originalWidth: number;
-  position: {
-    x: number;
-    y: number;
-  };
+  position: Position;
   asset: Asset;
   textElement?: Text;
+};
+
+export type Position = {
+  x: number;
+  y: number;
 };
 
 export type Text = {
@@ -81,3 +83,8 @@ export interface DialogInvocationParams {
   entryField: FieldData;
   assets: Asset[];
 }
+
+export type HandleAlignElementProps = {
+  id: string;
+  align: 'center' | 'top' | 'left' | 'bottom' | 'right';
+};

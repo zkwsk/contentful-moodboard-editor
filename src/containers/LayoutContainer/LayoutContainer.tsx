@@ -10,11 +10,15 @@ import mergeDraggableAssetWithPersistentState from './helpers/mergeDraggableAsse
 import {
   DialogInvocationParams,
   Draggable,
+  HandleAlignElementProps,
   Layout,
   LayoutSettings,
+  Position,
 } from '../../types';
 import LayoutCanvas from '../../components/LayoutCanvas';
 import quantize from '../../utilities/quantize';
+import parseAspectRatio from '../../utilities/parseAspectRatio';
+import aspectRatioToDecimal from '../../utilities/aspectRatioToDecimal';
 
 type LayoutContainerProps = {
   sdk: DialogExtensionSDK;
@@ -73,14 +77,55 @@ const LayoutContainer = ({ sdk }: LayoutContainerProps) => {
     }));
   };
 
-  const handleCenterElement = (id: string) => {
+  const handleAlignElement = ({ id, align }: HandleAlignElementProps) => {
     const currentElement = layout.elements.find(
       (element) => element.asset.id === id,
     );
     if (!currentElement) {
       return;
     }
-    const centeredX = layout.settings.maxWidth / 2 - currentElement.width / 2;
+
+    let alignedPosition: Position | null = null;
+
+    if (align === 'center') {
+      alignedPosition = {
+        ...currentElement.position,
+        x: layout.settings.maxWidth / 2 - currentElement.width / 2,
+      };
+    }
+    if (align === 'top') {
+      alignedPosition = {
+        ...currentElement.position,
+        y: 0,
+      };
+    }
+    if (align === 'right') {
+      alignedPosition = {
+        ...currentElement.position,
+        x: layout.settings.maxWidth,
+      };
+    }
+    if (align === 'bottom') {
+      alignedPosition = {
+        ...currentElement.position,
+        y:
+          layout.settings.maxWidth /
+            aspectRatioToDecimal(
+              parseAspectRatio(layout.settings.aspectRatio),
+            ) -
+          currentElement.height,
+      };
+    }
+    if (align === 'left') {
+      alignedPosition = {
+        ...currentElement.position,
+        x: 0,
+      };
+    }
+
+    if (!alignedPosition) {
+      return;
+    }
 
     setlayout((prevState) => {
       const { elements } = prevState;
@@ -89,7 +134,7 @@ const LayoutContainer = ({ sdk }: LayoutContainerProps) => {
         ...prevState,
         elements: elements.map((element) => {
           return element.asset.id === id
-            ? { ...element, position: { ...element.position, x: centeredX } }
+            ? { ...element, position: alignedPosition }
             : element;
         }),
       } as Layout;
@@ -224,7 +269,7 @@ const LayoutContainer = ({ sdk }: LayoutContainerProps) => {
                 <LayoutElementsPanel
                   elements={layout.elements}
                   onSetPublish={handleSetPublishAsset}
-                  onCenterElement={handleCenterElement}
+                  onAlignElement={handleAlignElement}
                 />
               ),
             },

@@ -5,18 +5,18 @@ import {
   DropdownList,
   DropdownListItem,
 } from '@contentful/forma-36-react-components';
-import { Draggable } from '../../types';
+import { Draggable, HandleAlignElementProps } from '../../types';
 
 type LayoutElementsPanelProps = {
   elements: Draggable[];
   onSetPublish: (id: string, value: boolean) => void;
-  onCenterElement: (id: string) => void;
+  onAlignElement: (options: HandleAlignElementProps) => void;
 };
 
 const LayoutElementsPanel = ({
   elements,
   onSetPublish,
-  onCenterElement,
+  onAlignElement,
 }: LayoutElementsPanelProps) => {
   const assetList = elements.filter((element) => element.asset);
 
@@ -44,8 +44,33 @@ const LayoutElementsPanel = ({
                   >
                     {element.published ? 'Unpublish' : 'Publish'}
                   </DropdownListItem>
-                  <DropdownListItem onClick={() => onCenterElement(asset.id)}>
+                  <DropdownListItem
+                    onClick={() =>
+                      onAlignElement({ id: asset.id, align: 'left' })
+                    }
+                  >
+                    Left align element
+                  </DropdownListItem>
+                  <DropdownListItem
+                    onClick={() =>
+                      onAlignElement({ id: asset.id, align: 'center' })
+                    }
+                  >
                     Center element
+                  </DropdownListItem>
+                  <DropdownListItem
+                    onClick={() =>
+                      onAlignElement({ id: asset.id, align: 'right' })
+                    }
+                  >
+                    Right align element
+                  </DropdownListItem>
+                  <DropdownListItem
+                    onClick={() =>
+                      onAlignElement({ id: asset.id, align: 'bottom' })
+                    }
+                  >
+                    Bottom align element
                   </DropdownListItem>
                 </DropdownList>
               }

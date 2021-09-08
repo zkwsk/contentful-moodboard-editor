@@ -5,6 +5,7 @@ import { Draggable as DraggableType, Layout } from '../../types';
 
 import 'react-resizable/css/styles.css';
 import { LayoutCanvasElement } from './LayoutCanvasElement';
+import parseAspectRatio from '../../utilities/parseAspectRatio';
 
 type LayoutCanvasProps = {
   layout: Layout;
@@ -15,9 +16,7 @@ const LayoutCanvas = ({ layout, onDragResize }: LayoutCanvasProps) => {
   const { elements, settings } = layout;
   const publishedElements = elements.filter(({ published }) => published);
 
-  const [aspectX, aspectY] = settings.aspectRatio
-    .split(':')
-    .map((element) => parseInt(element, 10)) as [number, number];
+  const [aspectX, aspectY] = parseAspectRatio(settings.aspectRatio);
 
   // TODO: Disabled. Currently bounds are offset by the previous elements height
   const bounds = false && {
