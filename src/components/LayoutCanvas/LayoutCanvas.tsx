@@ -18,11 +18,6 @@ const LayoutCanvas = ({ layout, onDragResize }: LayoutCanvasProps) => {
 
   const [aspectX, aspectY] = parseAspectRatio(settings.aspectRatio);
 
-  // TODO: Disabled. Currently bounds are offset by the previous elements height
-  const bounds = false && {
-    top: 0,
-    left: 0,
-  };
   const grid = [
     settings?.snap?.x ? settings.snap.x : 1,
     settings?.snap?.y ? settings.snap.y : 1,
