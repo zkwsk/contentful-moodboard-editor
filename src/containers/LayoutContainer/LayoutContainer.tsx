@@ -102,7 +102,7 @@ const LayoutContainer = ({ sdk }: LayoutContainerProps) => {
     if (align === 'right') {
       alignedPosition = {
         ...currentElement.position,
-        x: layout.settings.maxWidth,
+        x: layout.settings.maxWidth - currentElement.width,
       };
     }
     if (align === 'bottom') {
