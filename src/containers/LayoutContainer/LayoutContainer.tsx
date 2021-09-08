@@ -106,16 +106,16 @@ const LayoutContainer = ({ sdk }: LayoutContainerProps) => {
       }));
     }
 
-    // Quantization enabled
-    const ratio = value.height / value.width;
     setlayout(({ settings, elements }) => ({
       settings,
       elements: elements.map((element) => {
+        const ratio = value.height / value.width;
+        const quantizedWitdth = quantize(value.width, settings?.snap?.x || 0);
         return element.asset.id === id
           ? {
               ...value,
-              width: quantize(value.width, settings?.snap?.x || 0),
-              height: value.width * ratio,
+              width: quantizedWitdth,
+              height: quantizedWitdth * ratio,
             }
           : element;
       }),
