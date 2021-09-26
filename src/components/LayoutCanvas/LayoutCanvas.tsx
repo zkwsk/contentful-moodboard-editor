@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import Draggable from 'react-draggable';
 import { ResizableBox } from 'react-resizable';
 import { Draggable as DraggableType, Layout } from '../../types';
