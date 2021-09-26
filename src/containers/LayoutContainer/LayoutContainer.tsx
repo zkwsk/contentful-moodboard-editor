@@ -16,9 +16,9 @@ import {
   Position,
 } from '../../types';
 import LayoutCanvas from '../../components/LayoutCanvas';
-import quantize from '../../utilities/quantize';
 import parseAspectRatio from '../../utilities/parseAspectRatio';
 import aspectRatioToDecimal from '../../utilities/aspectRatioToDecimal';
+import useForceUpdate from '../../utilities/useForceUpdate';
 
 type LayoutContainerProps = {
   sdk: DialogExtensionSDK;
@@ -27,6 +27,8 @@ type LayoutContainerProps = {
 const LayoutContainer = ({ sdk }: LayoutContainerProps) => {
   const params = sdk.parameters?.invocation as DialogInvocationParams;
   const { currentLayoutId, layoutIds, entryField, assets } = params;
+
+  const forceUpdate = useForceUpdate();
 
   const initialSettings = {
     layoutId: '',
@@ -142,29 +144,18 @@ const LayoutContainer = ({ sdk }: LayoutContainerProps) => {
   };
 
   const handleDragResize = (id: string, value: Draggable) => {
-    if (!settings?.snap?.x) {
-      setlayout(({ settings, elements }) => ({
-        settings,
-        elements: elements.map((element) => {
-          return element.asset.id === id ? value : element;
-        }),
-      }));
-    }
-
     setlayout(({ settings, elements }) => ({
       settings,
       elements: elements.map((element) => {
-        const ratio = value.height / value.width;
-        const quantizedWitdth = quantize(value.width, settings?.snap?.x || 0);
-        return element.asset.id === id
-          ? {
-              ...value,
-              width: quantizedWitdth,
-              height: quantizedWitdth * ratio,
-            }
-          : element;
+        return element.asset.id === id ? value : element;
       }),
     }));
+
+    if (settings?.snap?.x) {
+      // TODO: Does not seem to do anything
+      console.log('Force update');
+      forceUpdate();
+    }
   };
 
   // useEffect(() => {

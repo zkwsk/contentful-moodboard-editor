@@ -6,6 +6,7 @@ import { Draggable as DraggableType, Layout } from '../../types';
 import 'react-resizable/css/styles.css';
 import { LayoutCanvasElement } from './LayoutCanvasElement';
 import parseAspectRatio from '../../utilities/parseAspectRatio';
+import quantize from '../../utilities/quantize';
 
 type LayoutCanvasProps = {
   layout: Layout;
@@ -87,15 +88,22 @@ const LayoutCanvas = ({ layout, onDragResize }: LayoutCanvasProps) => {
             >
               <ResizableBox
                 className="resizable-box-width-border"
+                minConstraints={[50, 50]}
                 height={height}
                 width={width}
                 lockAspectRatio={true}
                 resizeHandles={['se']}
                 onResizeStop={(event, data) => {
+                  const ratio = data.size.height / data.size.width;
+                  const quantizedWidth = quantize(
+                    data.size.width,
+                    settings?.snap?.x || 0,
+                  );
+
                   onDragResize(asset.id, {
                     ...element,
-                    height: data.size.height,
-                    width: data.size.width,
+                    height: quantizedWidth * ratio,
+                    width: quantizedWidth,
                   });
                 }}
               >
